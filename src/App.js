@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import "./App.css"
 import angelheadericon from './images/animeangel.png';
+import animebg from './images/animebg.webp';
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
@@ -52,11 +53,22 @@ function Slogan() {
   );
 }
 
+function StartQuiz() {
+  return (
+    <div className='quizContainer'>
+      <div className='bg'>
+        <img id='animebg' src={animebg} alt='Anime BG'></img>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <div className="App">
       <Header />
       <Slogan />
+      <StartQuiz />
     </div>
   );
 }
