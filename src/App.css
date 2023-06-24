@@ -41,7 +41,8 @@
   margin-top: 10px;
 }
 
-button {
+.menuButton,
+.menuButton.clicked {
   background-color: navy;
   border: none;
   font-size: 14px;
@@ -54,7 +55,27 @@ button {
   font-family: "Copperplate", "Papyrus";
 }
 
-button:hover {
+.menuButton:hover {
+  background-color: darkslateblue;
+  color: white;
+  font-size: 16px;
+}
+
+.normalButton,
+.normalButton.clicked {
+  background-color: navy;
+  border: none;
+  font-size: 14px;
+  color: #FFFFFF;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-family: "Copperplate", "Papyrus";
+}
+
+.normalButton:hover {
   background-color: darkslateblue;
   color: white;
   font-size: 16px;
@@ -168,3 +189,21 @@ button:hover {
 }
 
 
+#quizButton {
+  background-color: navy;
+  border: none;
+  font-size: 14px;
+  color: #FFFFFF;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-family: "Copperplate", "Papyrus";
+}
+
+.textOverlay.hover #quizButton {
+  background-color: darkslateblue;
+  color: white;
+  font-size: 16px;
+}

@@ -5,14 +5,24 @@ import animebg from './images/animebg.webp';
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
+  const [hoveredButton, setHoveredButton] = useState(null);
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
+    setHoveredButton(null);
     if (!showMenu) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
+  };
+
+  const handleButtonMouseEnter = (buttonId) => {
+    setHoveredButton(buttonId);
+  };
+
+  const handleButtonMouseLeave = () => {
+    setHoveredButton(null);
   };
 
   return (
@@ -23,20 +33,52 @@ function Header() {
         <div className='toplinks'>
           {window.innerWidth < 700 ? (
             <div className={`dropdown ${showMenu ? 'active' : ''}`}>
-              <button onClick={toggleMenu}>Menu</button>
+              <button onClick={toggleMenu} className="menuButton">Menu</button>
               <div className='dropdown-content'>
-                <button id="home">Home</button>
-                <button id="anime-genres">Anime Genres</button>
-                <button id="mal-profile">MAL Profile</button>
-                <button id="faq">Faq</button>
+                <button id="home" className="dropdownButton">Home</button>
+                <button id="anime-genres" className="dropdownButton">Anime Genres</button>
+                <button id="mal-profile" className="dropdownButton">MAL Profile</button>
+                <button id="faq" className="dropdownButton">Faq</button>
               </div>
             </div>
           ) : (
             <>
-              <button id="home">Home</button>
-              <button id="anime-genres">Anime Genres</button>
-              <button id="mal-profile">MAL Profile</button>
-              <button id="faq">Faq</button>
+              <button
+                id="home"
+                className={`normalButton ${hoveredButton === 'home' ? 'hover' : ''}`}
+                onClick={() => setHoveredButton(null)}
+                onMouseEnter={() => setHoveredButton('home')}
+                onMouseLeave={() => setHoveredButton(null)}
+              >
+                Home
+              </button>
+              <button
+                id="anime-genres"
+                className={`normalButton ${hoveredButton === 'anime-genres' ? 'hover' : ''}`}
+                onClick={() => setHoveredButton(null)}
+                onMouseEnter={() => setHoveredButton('anime-genres')}
+                onMouseLeave={() => setHoveredButton(null)}
+              >
+                Anime Genres
+              </button>
+              <button
+                id="mal-profile"
+                className={`normalButton ${hoveredButton === 'mal-profile' ? 'hover' : ''}`}
+                onClick={() => setHoveredButton(null)}
+                onMouseEnter={() => setHoveredButton('mal-profile')}
+                onMouseLeave={() => setHoveredButton(null)}
+              >
+                MAL Profile
+              </button>
+              <button
+                id="faq"
+                className={`normalButton ${hoveredButton === 'faq' ? 'hover' : ''}`}
+                onClick={() => setHoveredButton(null)}
+                onMouseEnter={() => setHoveredButton('faq')}
+                onMouseLeave={() => setHoveredButton(null)}
+              >
+                Faq
+              </button>
             </>
           )}
         </div>
@@ -54,17 +96,38 @@ function Slogan() {
 }
 
 function StartQuiz() {
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
+
+  const handleClick = () => {
+    setHovered(false);
+  };
+
   return (
     <div className='quizContainer'>
       <div className='bg'>
-        <img id='animebg' src={animebg} alt='Anime BG'></img>
-        <div className='textOverlay'>
-        <h1 id='question'>Which Anime should you watch next?</h1>
-        <button id='quizButton'>Start</button>
+        <img id='animebg' src={animebg} alt='Anime BG' />
+        <div className={`textOverlay ${hovered ? 'hover' : ''}`}>
+          <h1 id='question'>Which Anime should you watch next?</h1>
+          <button
+            id='quizButton'
+            onClick={handleClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            Start
+          </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 function App() {
