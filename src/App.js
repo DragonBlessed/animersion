@@ -58,6 +58,10 @@ function StartQuiz() {
     <div className='quizContainer'>
       <div className='bg'>
         <img id='animebg' src={animebg} alt='Anime BG'></img>
+        <div className='textOverlay'>
+        <h1 id='question'>Which Anime should you watch next?</h1>
+        <button id='quizButton'>Start</button>
+        </div>
       </div>
     </div>
   )
