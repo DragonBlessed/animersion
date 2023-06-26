@@ -207,3 +207,18 @@
   color: white;
   font-size: 16px;
 }
+
+.section {
+  display:flex;
+}
+
+.column {
+  flex:1;
+  align-items:last baseline;
+}
+
+.row {
+  padding: 10px;
+  background-color: lightgray;
+  margin-bottom: 10px;
+}

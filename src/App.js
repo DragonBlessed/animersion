@@ -130,12 +130,46 @@ function StartQuiz() {
   );
 }
 
+function AnimeList() {
+  return (    
+    <div className="section">
+      <div className="column">
+        <h2 className='topAnime'>Top Anime Rankings</h2>
+        <div className="row">Row 1, Column 1</div>
+        <div className="row">Row 2, Column 1</div>
+        <div className="row">Row 3, Column 1</div>
+        <div className="row">Row 4, Column 1</div>
+        <div className="row">Row 5, Column 1</div>
+        <div className="row">Row 6, Column 1</div>
+        <div className="row">Row 7, Column 1</div>
+        <div className="row">Row 8, Column 1</div>
+        <div className="row">Row 9, Column 1</div>
+        <div className="row">Row 10, Column 1</div>
+      </div>
+      <div className="column">
+        <h2 className='popularAnime'>Popular Anime Rankings</h2>
+        <div className="row">Row 1, Column 2</div>
+        <div className="row">Row 2, Column 2</div>
+        <div className="row">Row 3, Column 2</div>
+        <div className="row">Row 4, Column 2</div>
+        <div className="row">Row 5, Column 2</div>
+        <div className="row">Row 6, Column 2</div>
+        <div className="row">Row 7, Column 2</div>
+        <div className="row">Row 8, Column 2</div>
+        <div className="row">Row 9, Column 2</div>
+        <div className="row">Row 10, Column 2</div>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <div className="App">
       <Header />
       <Slogan />
       <StartQuiz />
+      <AnimeList />
     </div>
   );
 }
