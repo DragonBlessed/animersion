@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import "./App.css"
+import React, { useEffect, useState } from 'react';
+import './App.css';
 import angelheadericon from './images/animeangel.png';
 import animebg from './images/animebg.webp';
+
+
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
@@ -131,7 +133,7 @@ function StartQuiz() {
 }
 
 function AnimeList() {
-  return (    
+  return (
     <div className="section">
       <div className="column">
         <h2 className='topAnime'>Top Anime Rankings</h2>
@@ -160,18 +162,53 @@ function AnimeList() {
         <div className="row">Row 10, Column 2</div>
       </div>
     </div>
-  )
+  );
 }
 
-function App() {
-  return (
-    <div className="App">
-      <Header />
-      <Slogan />
-      <StartQuiz />
-      <AnimeList />
-    </div>
-  );
+
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: [],
+      isLoaded: false,
+    };
+  }
+
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => res.json())
+      .then(json => {
+        this.setState({
+          isLoaded: true,
+          items: json,
+        });
+      });
+  }
+
+  render() {
+    const { isLoaded } = this.state;
+
+    if (!isLoaded) {
+      return <div>Loading...</div>;
+    } else {
+      return (
+        <div className="App">
+          <Header />
+          <Slogan />
+          <StartQuiz />
+          <AnimeList />
+          <ul>
+            {this.state.items.map(item => (
+              <li key={item.id}>
+                Name: {item.name} | Email: {item.email}
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    }
+  }
 }
 
 export default App;
