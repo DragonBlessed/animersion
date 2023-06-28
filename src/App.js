@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './App.css';
 import angelheadericon from './images/animeangel.png';
 import animebg from './images/animebg.webp';
@@ -175,34 +176,45 @@ class App extends React.Component {
     };
   }
 
-  componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(res => res.json())
-      .then(json => {
-        this.setState({
-          isLoaded: true,
-          items: json,
-        });
+componentDidMount() {
+  axios.get('https://cors-anywhere.herokuapp.com/https://api.myanimelist.net/v2/anime/top')
+    .then(res => {
+      this.setState({
+        isLoaded: true,
+        items: res.data.top,
       });
-  }
+    })
+    .catch(error => {
+      console.log(error);
+      this.setState({
+        isLoaded: true,
+      });
+    });
+}
 
-  render() {
-    const { isLoaded } = this.state;
+render() {
+  const { isLoaded, items } = this.state;
 
-    if (!isLoaded) {
-      return <div>Loading...</div>;
-    } else {
-      return (
-        <div className="App">
-          <Header />
-          <Slogan />
-          <StartQuiz />
-          <AnimeList />
-          <ul>
-            {this.state.items.map(item => (
-              <li key={item.id}>
-                Name: {item.name} | Email: {item.email}
-              </li>
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  } else {
+    return (
+      <div className="App">
+        <Header />
+        <Slogan />
+        <StartQuiz />
+        <AnimeList />
+        <ul>
+          {items.map(item => (
+            <li key={item.node.id}>
+              <div>
+                <h4>{item.node.title}</h4>
+                <p>Rank: {item.rank}</p>
+                <p>Type: {item.node.type}</p>
+                <p>Score: {item.score}</p>
+                <p>Episodes: {item.node.episodes}</p>
+              </div>
+            </li>
             ))}
           </ul>
         </div>
