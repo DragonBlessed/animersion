@@ -133,94 +133,152 @@ function StartQuiz() {
   );
 }
 
-function AnimeList() {
+function fetchAiringRankings(page) {
+  return axios
+    .get('https://api.jikan.moe/v4/top/anime', {
+      params: {
+        type: 'tv',
+        filter: 'airing',
+        limit: 10,
+        page: page,
+      },
+    })
+    .then((res) => res.data.data)
+    .catch((error) => {
+      console.log(error);
+      return [];
+    });
+}
+
+function fetchPopularRankings(page) {
+  return axios
+    .get('https://api.jikan.moe/v4/top/anime', {
+      params: {
+        type: 'tv',
+        filter: 'bypopularity',
+        limit: 10,
+        page: page,
+      },
+    })
+    .then((res) => res.data.data)
+    .catch((error) => {
+      console.log(error);
+      return [];
+    });
+}
+
+const AnimeList = ({ airingList, popularList, fetchMoreAiring, fetchMorePopular }) => {
+  const [airingPage, setAiringPage] = useState(1);
+  const [popularPage, setPopularPage] = useState(1);
+
+  const handleAiringNextPage = () => {
+    const nextPage = airingPage + 1;
+    fetchMoreAiring(nextPage);
+    setAiringPage(nextPage);
+  };
+
+  const handlePopularNextPage = () => {
+    const nextPage = popularPage + 1;
+    fetchMorePopular(nextPage);
+    setPopularPage(nextPage);
+  };
+
   return (
-    <div className="section">
-      <div className="column">
-        <h2 className='topAnime'>Top Anime Rankings</h2>
-        <div className="row">Row 1, Column 1</div>
-        <div className="row">Row 2, Column 1</div>
-        <div className="row">Row 3, Column 1</div>
-        <div className="row">Row 4, Column 1</div>
-        <div className="row">Row 5, Column 1</div>
-        <div className="row">Row 6, Column 1</div>
-        <div className="row">Row 7, Column 1</div>
-        <div className="row">Row 8, Column 1</div>
-        <div className="row">Row 9, Column 1</div>
-        <div className="row">Row 10, Column 1</div>
-      </div>
-      <div className="column">
-        <h2 className='popularAnime'>Popular Anime Rankings</h2>
-        <div className="row">Row 1, Column 2</div>
-        <div className="row">Row 2, Column 2</div>
-        <div className="row">Row 3, Column 2</div>
-        <div className="row">Row 4, Column 2</div>
-        <div className="row">Row 5, Column 2</div>
-        <div className="row">Row 6, Column 2</div>
-        <div className="row">Row 7, Column 2</div>
-        <div className="row">Row 8, Column 2</div>
-        <div className="row">Row 9, Column 2</div>
-        <div className="row">Row 10, Column 2</div>
-      </div>
+    <div>
+      <h2>Airing List</h2>
+      {airingList ? (
+        <ul>
+          {airingList.map((anime) => (
+            <li key={anime.mal_id}>{anime.title}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>Loading airing list...</p>
+      )}
+      <button onClick={handleAiringNextPage}>Load More</button>
+
+      <h2>Popular List</h2>
+      {popularList ? (
+        <ul>
+          {popularList.map((anime) => (
+            <li key={anime.mal_id}>{anime.title}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>Loading popular list...</p>
+      )}
+      <button onClick={handlePopularNextPage}>Load More</button>
     </div>
   );
-}
+};
 
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: [],
-      isLoaded: false,
+      airingList: [],
+      popularList: [],
     };
   }
 
-componentDidMount() {
-  axios.get('https://cors-anywhere.herokuapp.com/https://api.myanimelist.net/v2/anime/top')
-    .then(res => {
-      this.setState({
-        isLoaded: true,
-        items: res.data.top,
+ componentDidMount() {
+    fetchAiringRankings()
+      .then(airingList => {
+        this.setState({ airingList });
+      })
+      .catch(error => {
+        console.log(error);
       });
-    })
-    .catch(error => {
-      console.log(error);
-      this.setState({
-        isLoaded: true,
+
+    fetchPopularRankings()
+      .then(popularList => {
+        this.setState({ popularList });
+      })
+      .catch(error => {
+        console.log(error);
       });
-    });
-}
+  }
+
+  fetchMoreAiring(page) {
+    fetchAiringRankings(page)
+      .then((newAiringList) => {
+        const { airingList } = this.state;
+        this.setState({ airingList: [...airingList, ...newAiringList] });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  fetchMorePopular(page) {
+    fetchPopularRankings(page)
+      .then((newPopularList) => {
+        const { popularList } = this.state;
+        this.setState({ popularList: [...popularList, ...newPopularList] });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
 
 render() {
-  const { isLoaded, items } = this.state;
-
-  if (!isLoaded) {
-    return <div>Loading...</div>;
-  } else {
+  const { airingList, popularList } = this.state; 
     return (
       <div className="App">
         <Header />
         <Slogan />
         <StartQuiz />
-        <AnimeList />
-        <ul>
-          {items.map(item => (
-            <li key={item.node.id}>
-              <div>
-                <h4>{item.node.title}</h4>
-                <p>Rank: {item.rank}</p>
-                <p>Type: {item.node.type}</p>
-                <p>Score: {item.score}</p>
-                <p>Episodes: {item.node.episodes}</p>
-              </div>
-            </li>
-            ))}
-          </ul>
-        </div>
+        <AnimeList
+          airingList={airingList}
+          popularList={popularList}
+          fetchMoreAiring={(page) => this.fetchMoreAiring(page)}
+          fetchMorePopular={(page) => this.fetchMorePopular(page)}
+        />
+      </div>
       );
     }
   }
-}
 
 export default App;
