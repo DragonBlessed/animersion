@@ -137,13 +137,15 @@ function fetchAiringRankings(page) {
   return axios
     .get('https://api.jikan.moe/v4/top/anime', {
       params: {
-        type: 'tv',
         filter: 'airing',
         limit: 10,
         page: page,
       },
     })
-    .then((res) => res.data.data)
+    .then((res) => {
+      console.log(res.data);
+      return res.data.data;
+    })
     .catch((error) => {
       console.log(error);
       return [];
@@ -154,13 +156,15 @@ function fetchPopularRankings(page) {
   return axios
     .get('https://api.jikan.moe/v4/top/anime', {
       params: {
-        type: 'tv',
         filter: 'bypopularity',
         limit: 10,
         page: page,
       },
     })
-    .then((res) => res.data.data)
+    .then((res) => {
+      console.log(res.data);
+      return res.data.data;
+    })
     .catch((error) => {
       console.log(error);
       return [];
@@ -185,20 +189,20 @@ const AnimeList = ({ airingList, popularList, fetchMoreAiring, fetchMorePopular 
 
   return (
     <div>
-      <h2>Airing List</h2>
-      {airingList ? (
-        <ul>
-          {airingList.map((anime) => (
-            <li key={anime.mal_id}>{anime.title}</li>
-          ))}
-        </ul>
+      <h2>Top Airing List</h2>
+        {airingList && airingList.length > 0 ? (
+      <ul>
+      {airingList.map((anime) => (
+        <li key={anime.mal_id}>{anime.title}</li>
+      ))}
+      </ul>
       ) : (
-        <p>Loading airing list...</p>
+      <p>Loading top airing list...</p>
       )}
       <button onClick={handleAiringNextPage}>Load More</button>
 
       <h2>Popular List</h2>
-      {popularList ? (
+      {popularList && popularList.length > 0 ? (
         <ul>
           {popularList.map((anime) => (
             <li key={anime.mal_id}>{anime.title}</li>
@@ -219,52 +223,103 @@ class App extends React.Component {
     this.state = {
       airingList: [],
       popularList: [],
+      airingPage: 1,
+      popularPage: 1,
     };
+    this.fetchMoreAiring = this.fetchMoreAiring.bind(this);
+    this.fetchMorePopular = this.fetchMorePopular.bind(this);
   }
 
- componentDidMount() {
-    fetchAiringRankings()
-      .then(airingList => {
+  componentDidMount() {
+    this.fetchAiringRankings()
+      .then((airingList) => {
         this.setState({ airingList });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
 
-    fetchPopularRankings()
-      .then(popularList => {
+    this.fetchPopularRankings()
+      .then((popularList) => {
         this.setState({ popularList });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error);
       });
   }
 
-  fetchMoreAiring(page) {
-    fetchAiringRankings(page)
+  fetchAiringRankings() {
+    const { airingPage } = this.state;
+    return axios
+      .get('https://api.jikan.moe/v4/top/anime', {
+        params: {
+          filter: 'airing',
+          limit: 10,
+          page: airingPage,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        return res.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return [];
+      });
+  }
+
+  fetchPopularRankings() {
+    const { popularPage } = this.state;
+    return axios
+      .get('https://api.jikan.moe/v4/top/anime', {
+        params: {
+          filter: 'bypopularity',
+          limit: 10,
+          page: popularPage,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        return res.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return [];
+      });
+  }
+
+  fetchMoreAiring() {
+    const { airingPage, airingList } = this.state;
+    const nextPage = airingPage + 1;
+    this.fetchAiringRankings(nextPage)
       .then((newAiringList) => {
-        const { airingList } = this.state;
-        this.setState({ airingList: [...airingList, ...newAiringList] });
+        this.setState({
+          airingList: [...airingList, ...newAiringList],
+          airingPage: nextPage,
+        });
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
-  fetchMorePopular(page) {
-    fetchPopularRankings(page)
+  fetchMorePopular() {
+    const { popularPage, popularList } = this.state;
+    const nextPage = popularPage + 1;
+    this.fetchPopularRankings(nextPage)
       .then((newPopularList) => {
-        const { popularList } = this.state;
-        this.setState({ popularList: [...popularList, ...newPopularList] });
+        this.setState({
+          popularList: [...popularList, ...newPopularList],
+          popularPage: nextPage,
+        });
       })
       .catch((error) => {
         console.log(error);
       });
   }
 
-
-render() {
-  const { airingList, popularList } = this.state; 
+  render() {
+    const { airingList, popularList } = this.state;
     return (
       <div className="App">
         <Header />
@@ -273,12 +328,12 @@ render() {
         <AnimeList
           airingList={airingList}
           popularList={popularList}
-          fetchMoreAiring={(page) => this.fetchMoreAiring(page)}
-          fetchMorePopular={(page) => this.fetchMorePopular(page)}
+          fetchMoreAiring={this.fetchMoreAiring}
+          fetchMorePopular={this.fetchMorePopular}
         />
       </div>
-      );
-    }
+    );
   }
+}
 
 export default App;
