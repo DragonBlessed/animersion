@@ -3,6 +3,9 @@ import axios from 'axios';
 import './App.css';
 import angelheadericon from './images/animeangel.png';
 import animebg from './images/animebg.webp';
+import 'tailwindcss/tailwind.css';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { Carousel } from 'react-responsive-carousel';
 
 
 
@@ -99,23 +102,21 @@ function Slogan() {
 }
 
 const FeaturedCarousel = () => {
-  const [index, setIndex] = useState(0);
-  const length = 3;
-
-  const handlePrevious = () => {
-    const newIndex = index - 1;
-    setIndex(newIndex < 0 ? length - 1 : newIndex);
-  }
-  const handleNext = () => {
-    const newIndex = index + 1;
-    setIndex(newIndex >= length ? 0 : newIndex);
-  }
   return (
-    <div className="carousel">
-      <button onClick={handlePrevious}>Previous</button>
-      <button onClick={handleNext}>Next</button>
-      <p>{index}</p>
-    </div>
+    <Carousel>
+      <div>
+        <img src="https://placehold.co/100x100" />
+        <p className="legend">Legend 1</p>
+      </div>
+      <div>
+        <img src="https://placehold.co/200x200" />
+        <p className="legend">Legend 2</p>
+      </div>
+      <div>
+        <img src="https://placehold.co/300x300" />
+        <p className="legend">Legend 3</p>
+      </div>
+    </Carousel>
   )
   }
   
