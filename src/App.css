@@ -227,3 +227,15 @@
   background-color: lightgray;
   margin-bottom: 10px;
 }
+
+.animerankings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.airinglist,
+.popularlist {
+  border: 2px solid gold;
+  padding: 10px;
+}

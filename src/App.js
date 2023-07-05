@@ -101,24 +101,32 @@ function Slogan() {
   );
 }
 
+const featuredCarouselStyles = {
+  width: "150px",
+  height: "150px", 
+  margin: "0 auto", 
+};
+
 const FeaturedCarousel = () => {
   return (
-    <Carousel>
-      <div>
-        <img src="https://placehold.co/100x100" />
-        <p className="legend">Legend 1</p>
-      </div>
-      <div>
-        <img src="https://placehold.co/200x200" />
-        <p className="legend">Legend 2</p>
-      </div>
-      <div>
-        <img src="https://placehold.co/300x300" />
-        <p className="legend">Legend 3</p>
-      </div>
-    </Carousel>
-  )
-  }
+    <div style={featuredCarouselStyles}>
+      <Carousel>
+        <div>
+          <img src="https://placehold.co/150x150" alt="Slide 1" />
+          <p className="legend">Legend 1</p>
+        </div>
+        <div>
+          <img src="https://placehold.co/150x150" alt="Slide 2" />
+          <p className="legend">Legend 2</p>
+        </div>
+        <div>
+          <img src="https://placehold.co/150x150" alt="Slide 3" />
+          <p className="legend">Legend 3</p>
+        </div>
+      </Carousel>
+    </div>
+  );
+};
   
 
 function StartQuiz() {
@@ -211,7 +219,8 @@ const AnimeList = ({ airingList, popularList, fetchMoreAiring, fetchMorePopular 
   };
 
   return (
-    <div>
+    <div className="animerankings">
+      <div className="airinglist">
       <h2>Top Airing List</h2>
         {airingList && airingList.length > 0 ? (
       <ul>
@@ -223,7 +232,8 @@ const AnimeList = ({ airingList, popularList, fetchMoreAiring, fetchMorePopular 
       <p>Loading top airing list...</p>
       )}
       <button onClick={handleAiringNextPage}>Load More</button>
-
+      </div>
+      <div className="popularlist">
       <h2>Popular List</h2>
       {popularList && popularList.length > 0 ? (
         <ul>
@@ -235,6 +245,7 @@ const AnimeList = ({ airingList, popularList, fetchMoreAiring, fetchMorePopular 
         <p>Loading popular list...</p>
       )}
       <button onClick={handlePopularNextPage}>Load More</button>
+      </div>
     </div>
   );
 };
