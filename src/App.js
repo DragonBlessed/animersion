@@ -251,6 +251,14 @@ const AnimeList = ({ airingList, popularList, fetchMoreAiring, fetchMorePopular 
 };
 
 
+function Footer() {
+  return (
+    <div className='footer'>
+      <p>Copyright @ DragonBlessed 2023</p>
+    </div>
+  )
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -366,6 +374,7 @@ class App extends React.Component {
           fetchMoreAiring={this.fetchMoreAiring}
           fetchMorePopular={this.fetchMorePopular}
         />
+        <Footer />
       </div>
     );
   }

@@ -239,3 +239,13 @@
   border: 2px solid gold;
   padding: 10px;
 }
+
+.footer {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  font-size: 20px;
+  background-color: gold;
+  height:5vw;
+  align-items: center;
+}
