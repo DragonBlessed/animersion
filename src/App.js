@@ -101,29 +101,48 @@ function Slogan() {
   );
 }
 
-const featuredCarouselStyles = {
-  width: "150px",
-  height: "150px", 
-  margin: "0 auto", 
-};
-
 const FeaturedCarousel = () => {
+  const [carouselData, setCarouselData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://api.jikan.moe/v4/top/anime', {
+          params: {
+            filter: 'favorite',
+            limit: 10,
+          },
+        });
+        const data = response.data.data;
+        setCarouselData(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+
+    const timer = setInterval(fetchData, 60 * 5000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   return (
-    <div style={featuredCarouselStyles}>
-      <Carousel>
-        <div>
-          <img src="https://placehold.co/150x150" alt="Slide 1" />
-          <p className="legend">Legend 1</p>
-        </div>
-        <div>
-          <img src="https://placehold.co/150x150" alt="Slide 2" />
-          <p className="legend">Legend 2</p>
-        </div>
-        <div>
-          <img src="https://placehold.co/150x150" alt="Slide 3" />
-          <p className="legend">Legend 3</p>
-        </div>
-      </Carousel>
+    <div>
+      {carouselData.length > 0 ? (
+        <Carousel showThumbs={false} showStatus={false} showIndicators={false}>
+          {carouselData.map((item) => (
+            <div key={item.mal_id}>
+              <img src={item.image_url} alt={item.title} style={{ width: '100%', height: 'auto' }} />
+              <p className="legend">{item.title}</p>
+            </div>
+          ))}
+        </Carousel>
+      ) : (
+        <p>Loading carousel data...</p>
+      )}
     </div>
   );
 };
@@ -205,51 +224,116 @@ function fetchPopularRankings(page) {
 const AnimeList = ({ airingList, popularList, fetchMoreAiring, fetchMorePopular }) => {
   const [airingPage, setAiringPage] = useState(1);
   const [popularPage, setPopularPage] = useState(1);
+  const [airingListData, setAiringListData] = useState([]);
+  const [popularListData, setPopularListData] = useState([]);
+
+  useEffect(() => {
+    const fetchAiringRankings = async () => {
+      try {
+        const data = await fetchAiringData(airingPage);
+        setAiringListData((prevList) => [...prevList, ...data]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const fetchPopularRankings = async () => {
+      try {
+        const data = await fetchPopularData(popularPage);
+        setPopularListData((prevList) => [...prevList, ...data]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchAiringRankings();
+    fetchPopularRankings();
+
+    const timer = setInterval(() => {
+      fetchAiringRankings();
+      fetchPopularRankings();
+    }, 5 * 60 * 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [airingPage, popularPage]);
+
+  const fetchAiringData = async (page) => {
+    try {
+      const response = await axios.get('https://api.jikan.moe/v4/top/anime', {
+        params: {
+          filter: 'airing',
+          limit: 10,
+          page: page,
+        },
+      });
+      const data = response.data.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  };
+
+  const fetchPopularData = async (page) => {
+    try {
+      const response = await axios.get('https://api.jikan.moe/v4/top/anime', {
+        params: {
+          filter: 'bypopularity',
+          limit: 10,
+          page: page,
+        },
+      });
+      const data = response.data.data;
+      return data;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  };
 
   const handleAiringNextPage = () => {
     const nextPage = airingPage + 1;
-    fetchMoreAiring(nextPage);
     setAiringPage(nextPage);
   };
 
   const handlePopularNextPage = () => {
     const nextPage = popularPage + 1;
-    fetchMorePopular(nextPage);
     setPopularPage(nextPage);
   };
 
   return (
     <div className="animerankings">
       <div className="airinglist">
-      <h2>Top Airing List</h2>
-        {airingList && airingList.length > 0 ? (
-      <ul>
-      {airingList.map((anime) => (
-        <li key={anime.mal_id}>{anime.title}</li>
-      ))}
-      </ul>
-      ) : (
-      <p>Loading top airing list...</p>
-      )}
-      <button onClick={handleAiringNextPage}>Load More</button>
+        <h2>Top Airing List</h2>
+        {airingListData && airingListData.length > 0 ? (
+          <ul>
+            {airingListData.map((anime) => (
+              <li key={anime.mal_id}>{anime.title}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>Loading top airing list...</p>
+        )}
+        <button onClick={handleAiringNextPage}>Load More</button>
       </div>
       <div className="popularlist">
-      <h2>Popular List</h2>
-      {popularList && popularList.length > 0 ? (
-        <ul>
-          {popularList.map((anime) => (
-            <li key={anime.mal_id}>{anime.title}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>Loading popular list...</p>
-      )}
-      <button onClick={handlePopularNextPage}>Load More</button>
+        <h2>Popular List</h2>
+        {popularListData && popularListData.length > 0 ? (
+          <ul>
+            {popularListData.map((anime) => (
+              <li key={anime.mal_id}>{anime.title}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>Loading popular list...</p>
+        )}
+        <button onClick={handlePopularNextPage}>Load More</button>
       </div>
     </div>
   );
 };
-
 
 function Footer() {
   return (
@@ -265,14 +349,24 @@ class App extends React.Component {
     this.state = {
       airingList: [],
       popularList: [],
+      animeImages: [],
       airingPage: 1,
       popularPage: 1,
     };
+    this.fetchAnimeImages = this.fetchAnimeImages.bind(this);
     this.fetchMoreAiring = this.fetchMoreAiring.bind(this);
     this.fetchMorePopular = this.fetchMorePopular.bind(this);
   }
 
   componentDidMount() {
+    this.fetchAnimeImages()
+      .then((animeImages) => {
+        this.setState({ animeImages });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
     this.fetchAiringRankings()
       .then((airingList) => {
         this.setState({ airingList });
@@ -290,7 +384,25 @@ class App extends React.Component {
       });
   }
 
-  fetchAiringRankings() {
+  fetchAnimeImages() {
+    return axios
+      .get('https://api.jikan.moe/v4/top/anime', {
+        params: {
+          filter: 'favorite',
+          limit: 3,
+          page: 1,
+        },
+      })
+      .then((res) => {
+        return res.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+        return [];
+      });
+  }
+
+  fetchAiringRankings(page) {
     const { airingPage } = this.state;
     return axios
       .get('https://api.jikan.moe/v4/top/anime', {
@@ -310,7 +422,7 @@ class App extends React.Component {
       });
   }
 
-  fetchPopularRankings() {
+  fetchPopularRankings(page) {
     const { popularPage } = this.state;
     return axios
       .get('https://api.jikan.moe/v4/top/anime', {
@@ -361,12 +473,12 @@ class App extends React.Component {
   }
 
   render() {
-    const { airingList, popularList } = this.state;
+    const { airingList, popularList, animeImages } = this.state;
     return (
       <div className="App">
         <Header />
         <Slogan />
-        <FeaturedCarousel />
+        <FeaturedCarousel animeImages={animeImages} />
         <StartQuiz />
         <AnimeList
           airingList={airingList}
