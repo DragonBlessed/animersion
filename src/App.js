@@ -106,43 +106,33 @@ const FeaturedCarousel = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://api.jikan.moe/v4/top/anime', {
+        const response = await axios.get('https://cors-anywhere.herokuapp.com/https://api.myanimelist.net/v2/anime/ranking', {
           params: {
-            filter: 'favorite',
-            limit: 1,
+            ranking_type: 'favorite',
+            limit: 5,
+          },
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-MAL-CLIENT-ID': '3223f3602cca85851bec0d01d3054834',
           },
         });
         const data = response.data.data;
-        setCarouselData((prevData) => [...prevData, ...data]);
+        setCarouselData(data);
       } catch (error) {
         console.log(error);
       }
     };
-
     fetchData();
-
-    const timer = setInterval(fetchData, 60 * 5000);
-    setIntervalId(timer);
-
-    return () => {
-      clearInterval(timer);
-    };
   }, []);
-
-  useEffect(() => {
-    if (carouselData.length >= 5) {
-      clearInterval(intervalId);
-    }
-  }, [carouselData]);
 
   return (
     <div>
       {carouselData.length > 0 ? (
         <Carousel showThumbs={false} showStatus={false} showIndicators={false}>
           {carouselData.map((item) => (
-            <div key={item.mal_id}>
-              <img src={item.image_url} alt={item.title} style={{ width: '100%', height: 'auto' }} />
-              <p className="legend">{item.title}</p>
+            <div key={item.node.id}>
+              <img src={item.node.main_picture.medium} alt={item.node.title} style={{ width: '100%', height: 'auto' }} />
+              <p className="legend">{item.node.title}</p>
             </div>
           ))}
         </Carousel>
