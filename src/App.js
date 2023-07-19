@@ -157,6 +157,9 @@ function StartQuiz() {
   const handleClick = () => {
     setHovered(false);
   };
+  if (handleClick) { // add transition into linking MAL account and recommendation algorithm
+
+  }
 
   return (
     <div className='quizContainer'>
