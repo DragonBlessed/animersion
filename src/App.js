@@ -101,7 +101,6 @@ function Slogan() {
 
 const FeaturedCarousel = () => {
   const [carouselData, setCarouselData] = useState([]);
-  const [intervalId, setIntervalId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,10 +127,10 @@ const FeaturedCarousel = () => {
   return (
     <div>
       {carouselData.length > 0 ? (
-        <Carousel showThumbs={false} showStatus={false} showIndicators={false}>
+        <Carousel showThumbs={false} showStatus={false} showIndicators={false} autoPlay={true} centerMode={true} infiniteLoop={true}>
           {carouselData.map((item) => (
             <div key={item.node.id}>
-              <img src={item.node.main_picture.medium} alt={item.node.title} style={{ width: '100%', height: 'auto' }} />
+              <img src={item.node.main_picture.medium} alt={item.node.title} style={{ width: '30%', height: 'auto' }} />
               <p className="legend">{item.node.title}</p>
             </div>
           ))}

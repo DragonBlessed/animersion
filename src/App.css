@@ -151,6 +151,24 @@
   top: 60px;
 }
 
+.carousel .control-prev.control-arrow, 
+.carousel .control-next.control-arrow {
+    width: 50px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.carousel .control-prev.control-arrow::before, 
+.carousel .control-next.control-arrow::before {
+    content: '';
+    border-width: 10px;
+    border-color: white;
+}
+
+.carousel .control-prev.control-arrow:hover, 
+.carousel .control-next.control-arrow:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
 .quizContainer {
   position: relative;
   width: 100%;
