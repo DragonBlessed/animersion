@@ -112,7 +112,7 @@ const FeaturedCarousel = () => {
           },
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
-            'X-MAL-CLIENT-ID': '3223f3602cca85851bec0d01d3054834',
+            'X-MAL-CLIENT-ID': process.env.REACT_APP_MAL_CLIENT_ID,
           },
         });
         const data = response.data.data;
