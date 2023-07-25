@@ -144,41 +144,85 @@ const FeaturedCarousel = () => {
 
 function StartQuiz() {
   const [hovered, setHovered] = useState(false);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [quizStep, setQuizStep] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState([]);
 
-  const handleMouseEnter = () => {
-    setHovered(true);
+  const questions = [
+    {
+      question: "Are you looking for a popular Anime or lesser known Anime?",
+      options: ["Yes", "No", "Undecided"]
+    },
+    {
+      question: "Any Anime that includes NSFW themes?",
+      options: ["Yes", "No"]
+    },
+    {
+      question: "Are you looking for a specific type of Anime?",
+      options: ["Shounen", "Seinen", "Shoujo", "Josei", "Kids"]
+    },
+    {
+      question: "Sci-Fi, Slice of Life, or Fantasy?",
+      options: ["Sci-Fi", "Slice of Life", "Fantasy"]
+    },
+    {
+      question: "Do you want an Anime generally considered to be heavy and hard to follow e.g. Serial Experiments Lain, Neon Genesis Evangelion, Ergo Proxy?",
+      options: ["Yes", "No"]
+    }
+  ];
+
+  const handleAnswerClick = (answer) => {
+    setQuizAnswers(prevAnswers => [...prevAnswers, answer]);
+    if (quizStep < questions.length - 1) {
+      setQuizStep(quizStep + 1);
+    } else {
+
+    }
   };
 
-  const handleMouseLeave = () => {
-    setHovered(false);
-  };
+  const handleMouseEnter = () => setHovered(true);
+  const handleMouseLeave = () => setHovered(false);
 
   const handleClick = () => {
     setHovered(false);
+    setQuizStarted(true);
   };
-  if (handleClick) { // add transition into linking MAL account and recommendation algorithm
 
-  }
-
-  return (
-    <div className='quizContainer'>
-      <div className='bg'>
-        <img id='animebg' src={animebg} alt='Anime BG' />
-        <div className={`textOverlay ${hovered ? 'hover' : ''}`}>
-          <h1 id='question'>Which Anime should you watch next?</h1>
-          <button
-            id='quizButton'
-            onClick={handleClick}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-          >
-            Start
-          </button>
+  if (!quizStarted) {
+    return (
+      <div className='quizContainer'>
+        <div className='bg'>
+          <img id='animebg' src={animebg} alt='Anime BG' />
+          <div className={`textOverlay ${hovered ? 'hover' : ''}`}>
+            <h1 id='question'>Which Anime should you watch next?</h1>
+            <button
+              id='quizButton'
+              onClick={handleClick}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              Start
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  } else {
+    return (
+      <div className='quizContainer'>
+        <h2>{questions[quizStep].question}</h2>
+        <div>
+          {questions[quizStep].options.map((option, index) => (
+            <button key={index} onClick={() => handleAnswerClick(option)}>
+              {option}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 }
+
 
 const AnimeList = () => {
   const [airingPage, setAiringPage] = useState(1);
