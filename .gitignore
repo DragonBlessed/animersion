@@ -18,6 +18,8 @@
 .env.test.local
 .env.production.local
 apis.env
+.git-credentials
+.gitconfig
 
 npm-debug.log*
 yarn-debug.log*
