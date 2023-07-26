@@ -9,7 +9,7 @@
   align-items: flex-start;
   overflow-x: auto;
   background-color: gold;
-  font-family: "Copperplate", "Papyrus";
+  font-family: "Copperplate", "Copperplate Gothic", "Century Gothic", "Helvetica", sans-serif;
 }
 
 #title {

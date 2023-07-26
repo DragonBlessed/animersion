@@ -105,22 +105,13 @@ const FeaturedCarousel = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://cors-anywhere.herokuapp.com/https://api.myanimelist.net/v2/anime/ranking', {
-          params: {
-            ranking_type: 'favorite',
-            limit: 5,
-          },
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-MAL-CLIENT-ID': process.env.REACT_APP_MAL_CLIENT_ID,
-          },
-        });
+        const response = await axios.get('/api/mal');
         const data = response.data.data;
         setCarouselData(data);
       } catch (error) {
         console.log(error);
       }
-    };
+    };    
     fetchData();
   }, []);
 
