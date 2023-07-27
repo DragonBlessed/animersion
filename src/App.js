@@ -201,14 +201,21 @@ function StartQuiz() {
   } else {
     return (
       <div className='quizContainer'>
-        <h2>{questions[quizStep].question}</h2>
-        <div>
-          {questions[quizStep].options.map((option, index) => (
-            <button key={index} onClick={() => handleAnswerClick(option)}>
-              {option}
+        <div className='bg'>
+        <img id='animebg' src={animebg} alt='Anime BG' />
+        <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
+            <div className="flex flex-col items-center justify-center space-y-4">
+        {questions[quizStep].options.map((option, index) => (
+            <button 
+                className="bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                key={index} 
+                onClick={() => handleAnswerClick(option)}
+            >
+                {option}
             </button>
-          ))}
+        ))}
         </div>
+      </div>
       </div>
     );
   }
