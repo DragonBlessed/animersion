@@ -118,10 +118,14 @@ const FeaturedCarousel = () => {
   return (
     <div>
       {carouselData.length > 0 ? (
-        <Carousel showThumbs={false} showStatus={false} showIndicators={false} autoPlay={true} centerMode={true} infiniteLoop={true}>
+        <Carousel showThumbs={false} showStatus={false} showIndicators={false} autoPlay={true} centerMode={true} infiniteLoop={true} centerSlidePercentage={70}>
           {carouselData.map((item) => (
             <div key={item.node.id}>
-              <img src={item.node.main_picture.medium} alt={item.node.title} style={{ width: '30%', height: 'auto' }} />
+              <img 
+                  src={item.node.main_picture.medium} 
+                  alt={item.node.title} 
+                  className="w-full h-48 object-cover md:h-96"
+              />
               <p className="legend">{item.node.title}</p>
             </div>
           ))}
@@ -130,7 +134,7 @@ const FeaturedCarousel = () => {
         <p>Loading carousel data...</p>
       )}
     </div>
-  );
+  );  
 };
 
 function StartQuiz() {
