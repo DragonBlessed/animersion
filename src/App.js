@@ -206,25 +206,28 @@ function StartQuiz() {
     return (
       <div className='quizContainer'>
         <div className='bg'>
-        <img id='animebg' src={animebg} alt='Anime BG' />
-        <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
-            <div className="flex flex-col items-center justify-center space-y-4">
-        {questions[quizStep].options.map((option, index) => (
-            <button 
-                className="bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
-                key={index} 
-                onClick={() => handleAnswerClick(option)}
-            >
-                {option}
-            </button>
-        ))}
+          <img id='animebg' src={animebg} alt='Anime BG' />
         </div>
-      </div>
+        <div className='questionContainer'>
+        <div class="p-4 bg-yellow-500 rounded-full inline-block">
+            <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
+            </div>
+          <div className="flex flex-col items-center justify-center space-y-4">
+            {questions[quizStep].options.map((option, index) => (
+              <button
+                className="bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                key={index}
+                onClick={() => handleAnswerClick(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 }
-
 
 const AnimeList = () => {
   const [airingPage, setAiringPage] = useState(1);
