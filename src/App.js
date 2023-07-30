@@ -94,7 +94,23 @@ function Header() {
 function Slogan() {
   return (
     <div className='slogan'>
-      <h3>Your Golden Gateway into the Anime Universe.</h3>
+      <div className="text-container">
+        <h3 className="sloganheader">
+          <span>Your Golden Gateway <br /> into the Anime Universe.</span>
+        </h3>
+      </div>
+      <div className="blobs_1"></div>
+      <div className="blobs_2"></div>
+      <div className="blobs_3"></div>
+      <div className="blobs_4"></div>
+      <div className="blobs_5"></div>
+      <div className="blobs_6"></div>
+      <div className="blobs_7"></div>
+      <div className="blobs_8"></div>
+      <div className="blobs_9"></div>
+      <div className="blobs_10"></div>
+      <div className="blobs_11"></div>
+      <div className="blobs_12"></div>
     </div>
   );
 }
@@ -116,22 +132,22 @@ const FeaturedCarousel = () => {
   }, []);
 
   return (
-    <div>
+    <div className="carousel-container mt-6 p-4 bg-gold">
       {carouselData.length > 0 ? (
         <Carousel showThumbs={false} showStatus={false} showIndicators={false} autoPlay={true} centerMode={true} infiniteLoop={true} centerSlidePercentage={70}>
           {carouselData.map((item) => (
             <div key={item.node.id}>
               <img 
-                  src={item.node.main_picture.medium} 
+                  src={item.node.main_picture.large} 
                   alt={item.node.title} 
                   className="w-full h-48 object-cover md:h-96"
               />
-              <p className="legend">{item.node.title}</p>
+              <p className="legend text-center text-white font-bold text-lg">{item.node.title}</p>
             </div>
           ))}
         </Carousel>
       ) : (
-        <p>Loading carousel data...</p>
+        <p className="text-center text-lg">Loading carousel data...</p>
       )}
     </div>
   );  
@@ -183,12 +199,17 @@ function StartQuiz() {
     setQuizStarted(true);
   };
 
+  const handleResetClick = () => {
+    setQuizStep(0);
+    setQuizAnswers([]);
+  };
+
   if (!quizStarted) {
     return (
       <div className='quizContainer'>
         <div className='bg'>
           <img id='animebg' src={animebg} alt='Anime BG' />
-          <div className={`textOverlay ${hovered ? 'hover' : ''}`}>
+          <div className={`p-4 bg-yellow-500 rounded-full inline-block textOverlay ${hovered ? 'hover' : ''}`}>
             <h1 id='question'>Which Anime should you watch next?</h1>
             <button
               id='quizButton'
@@ -209,7 +230,7 @@ function StartQuiz() {
           <img id='animebg' src={animebg} alt='Anime BG' />
         </div>
         <div className='questionContainer'>
-        <div class="p-4 bg-yellow-500 rounded-full inline-block">
+        <div className="p-4 bg-yellow-500 rounded-full inline-block">
             <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
             </div>
           <div className="flex flex-col items-center justify-center space-y-4">
@@ -222,6 +243,14 @@ function StartQuiz() {
                 {option}
               </button>
             ))}
+            {quizStep > 0 && (
+              <button
+                className="bg-red-500 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                onClick={handleResetClick}
+              >
+                Reset Quiz
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -241,7 +270,7 @@ useEffect(() => {
       const response = await axios.get('https://api.jikan.moe/v4/top/anime', {
         params: {
           filter: 'airing',
-          limit: 10,
+          limit: 5,
           page: airingPage,
         },
       });
