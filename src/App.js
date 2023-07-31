@@ -30,10 +30,12 @@ function Header() {
   };
 
   return (
-    <div className='header'>
-      <div id='title'>
-        <img id='headericon' src={angelheadericon} alt='Header Icon' />
-        <h1 id='headertitle'>Animersion</h1>
+      <div className='header'>
+        <div className='headerTop'>
+          <div id='title'>
+            <img id='headericon' src={angelheadericon} alt='Header Icon' />
+            <h1 id='headertitle'>Animersion</h1>
+          </div>
         <div className='toplinks'>
           {window.innerWidth < 700 ? (
             <div className={`dropdown ${showMenu ? 'active' : ''}`}>
@@ -270,7 +272,7 @@ useEffect(() => {
       const response = await axios.get('https://api.jikan.moe/v4/top/anime', {
         params: {
           filter: 'airing',
-          limit: 5,
+          limit: 10,
           page: airingPage,
         },
       });
@@ -315,30 +317,38 @@ useEffect(() => {
   return (
     <div className="animerankings">
       <div className="airinglist">
-        <h2>Top Airing List</h2>
+        <h2>Top Airing Anime</h2>
         {airingListData && airingListData.length > 0 ? (
           <ul>
             {airingListData.map((anime) => (
-              <li key={anime.mal_id}>{anime.title}</li>
+              <li key={anime.mal_id}>
+                <a href={anime.url} target="_blank" rel="noopener noreferrer">{anime.title} </a>
+              </li>
             ))}
           </ul>
         ) : (
           <p>Loading top airing list...</p>
         )}
-        <button onClick={handleAiringNextPage}>Load More</button>
+        <button onClick={handleAiringNextPage} className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
+          Load More
+        </button>
       </div>
       <div className="popularlist">
-        <h2>Popular List</h2>
+        <h2>Popular Anime</h2>
         {popularListData && popularListData.length > 0 ? (
           <ul>
             {popularListData.map((anime) => (
-              <li key={anime.mal_id}>{anime.title}</li>
+              <li key={anime.mal_id}>
+                <a href={anime.url} target="_blank" rel="noopener noreferrer">{anime.title}</a>
+                </li>
             ))}
           </ul>
         ) : (
           <p>Loading popular list...</p>
         )}
-        <button onClick={handlePopularNextPage}>Load More</button>
+        <button onClick={handlePopularNextPage} className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
+          Load More
+        </button>
       </div>
     </div>
   );
