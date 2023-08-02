@@ -6,6 +6,9 @@ import animebg from './images/animebg.webp';
 import 'tailwindcss/tailwind.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+
 
 function Header() {
   const [showMenu, setShowMenu] = useState(false);
@@ -260,7 +263,7 @@ function StartQuiz() {
   }
 }
 
-const AnimeList = () => {
+const AnimeList = () => { // add next page button/previous page button
   const [airingPage, setAiringPage] = useState(1);
   const [popularPage, setPopularPage] = useState(1);
   const [airingListData, setAiringListData] = useState([]);
@@ -277,7 +280,7 @@ useEffect(() => {
         },
       });
       const data = response.data.data;
-      setAiringListData((prevList) => [...prevList, ...data]);
+      setAiringListData(data);
     } catch (error) {
       console.log(error);
     }
@@ -296,7 +299,7 @@ useEffect(() => {
         },
       });
       const data = response.data.data;
-      setPopularListData((prevList) => [...prevList, ...data]);
+      setPopularListData(data);
     } catch (error) {
       console.log(error);
     }
@@ -354,6 +357,16 @@ useEffect(() => {
   );
 };
 
+function MediaLinks() {
+  return (
+    <div className='mediaLinks'>
+      <a href='https://github.com/DragonBlessed' target='_blank' rel='noopener noreferrer'>
+        <FontAwesomeIcon icon={faGithub} />
+      </a>
+    </div>
+  );
+}
+
 function Footer() {
   return (
     <div className='footer'>
@@ -370,6 +383,7 @@ function App() {
       <FeaturedCarousel />
       <StartQuiz />
       <AnimeList />
+      <MediaLinks />
       <Footer />
     </div>
   );
