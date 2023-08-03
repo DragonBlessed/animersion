@@ -147,7 +147,7 @@ const FeaturedCarousel = () => {
                   alt={item.node.title} 
                   className="w-full h-48 object-cover md:h-96"
               />
-              <p className="legend text-center text-white font-bold text-lg">{item.node.title}</p>
+              <p className="font-nunito legend text-center text-white font-bold text-lg">{item.node.title}</p>
             </div>
           ))}
         </Carousel>
@@ -214,7 +214,7 @@ function StartQuiz() {
       <div className='quizContainer'>
         <div className='bg'>
           <img id='animebg' src={animebg} alt='Anime BG' />
-          <div className={`p-4 bg-yellow-500 rounded-full inline-block textOverlay ${hovered ? 'hover' : ''}`}>
+          <div className={`font-poppins p-4 bg-yellow-500 rounded-full inline-block textOverlay ${hovered ? 'hover' : ''}`}>
             <h1 id='question'>Which Anime should you watch next?</h1>
             <button
               id='quizButton'
@@ -235,13 +235,13 @@ function StartQuiz() {
           <img id='animebg' src={animebg} alt='Anime BG' />
         </div>
         <div className='questionContainer'>
-        <div className="p-4 bg-yellow-500 rounded-full inline-block">
+        <div className="font-nunito p-4 bg-yellow-500 rounded-full inline-block">
             <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
             </div>
           <div className="flex flex-col items-center justify-center space-y-4">
             {questions[quizStep].options.map((option, index) => (
               <button
-                className="bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                className="font-nunito bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
                 key={index}
                 onClick={() => handleAnswerClick(option)}
               >
@@ -250,7 +250,7 @@ function StartQuiz() {
             ))}
             {quizStep > 0 && (
               <button
-                className="bg-red-500 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                className="font-nunito bg-red-500 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
                 onClick={handleResetClick}
               >
                 Reset Quiz
@@ -263,7 +263,7 @@ function StartQuiz() {
   }
 }
 
-const AnimeList = () => { // add next page button/previous page button
+const AnimeList = () => { 
   const [airingPage, setAiringPage] = useState(1);
   const [popularPage, setPopularPage] = useState(1);
   const [airingListData, setAiringListData] = useState([]);
@@ -312,9 +312,19 @@ useEffect(() => {
     setAiringPage(nextPage);
   };
 
+  const handleAiringPreviousPage = () => {
+    const previousPage = airingPage - 1;
+    setAiringPage(previousPage);
+  };
+
   const handlePopularNextPage = () => {
     const nextPage = popularPage + 1;
     setPopularPage(nextPage);
+  };
+
+  const handlePopularPreviousPage = () => {
+    const previousPage = popularPage - 1;
+    setPopularPage(previousPage);
   };
 
   return (
@@ -332,9 +342,19 @@ useEffect(() => {
         ) : (
           <p>Loading top airing list...</p>
         )}
-        <button onClick={handleAiringNextPage} className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
-          Load More
-        </button>
+        <div className="flex justify-between"> 
+          {airingPage > 1 && (
+            <button
+              className="font-nunito bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all"
+              onClick={handleAiringPreviousPage}
+            >
+              Previous Page 
+            </button>
+          )}
+          <button onClick={handleAiringNextPage} className="font-nunito bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
+            Next Page
+          </button>
+        </div>
       </div>
       <div className="popularlist">
         <h2>Popular Anime</h2>
@@ -349,28 +369,57 @@ useEffect(() => {
         ) : (
           <p>Loading popular list...</p>
         )}
-        <button onClick={handlePopularNextPage} className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
-          Load More
-        </button>
+        <div className="flex justify-between">
+          {popularPage > 1 && (
+            <button
+              className="font-nunito bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all"
+              onClick={handlePopularPreviousPage}
+            >
+              Previous Page 
+            </button>
+          )}
+          <button onClick={handlePopularNextPage} className="font-nunito bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
+            Next Page
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-function MediaLinks() {
-  return (
-    <div className='mediaLinks'>
-      <a href='https://github.com/DragonBlessed' target='_blank' rel='noopener noreferrer'>
-        <FontAwesomeIcon icon={faGithub} />
-      </a>
-    </div>
-  );
-}
 
-function Footer() {
+function Footer() { // gradient?
   return (
-    <div className='footer'>
-      <p>Copyright @ DragonBlessed 2023</p>
+    <div className='bg-gold'>
+      <div className='container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
+        <div>
+          <h3 className='font-poppins text-lg font-bold mb-4'>Quick Links</h3>
+          <ul>
+            <li><a href="/" className="font-nunito hover:underline">Home</a></li>
+            <li><a href="/faq" className="font-nunito hover:underline">Faq</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="font-poppins text-lg font-bold mb-4">Social Media</h3>
+          <a href='https://github.com/DragonBlessed' target='_blank' rel='noopener noreferrer'>
+            <FontAwesomeIcon icon={faGithub} />
+          </a>
+        </div>
+        <div>
+          <h3 className="font-poppins text-lg font-bold mb-4">Contact Us</h3>
+          <form>
+            <input type="text" placeholder="Name" className="mb-2 p-2 w-full"/>
+            <input type="email" placeholder="Email" className="mb-2 p-2 w-full"/>
+            <textarea placeholder="Message" className="mb-2 p-2 w-full"></textarea>
+            <button className="font-poppins bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+      <div className="font-poppins text-center mt-8">
+        <p>Copyright @ DragonBlessed 2023</p>
+      </div>
     </div>
   )
 }
@@ -383,7 +432,6 @@ function App() {
       <FeaturedCarousel />
       <StartQuiz />
       <AnimeList />
-      <MediaLinks />
       <Footer />
     </div>
   );
