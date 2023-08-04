@@ -131,10 +131,19 @@ const FeaturedCarousel = () => {
         setCarouselData(data);
       } catch (error) {
         console.log(error);
+        setCarouselData(undefined);
       }
     };    
     fetchData();
   }, []);
+
+  if (!carouselData || carouselData.length === 0) {
+    return (
+      <div className="carousel-container mt-6 p-4 bg-gold text-center">
+        <p className="text-lg">The MyAnimeList website or API appears to be having issues. Please try again later.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="carousel-container mt-6 p-4 bg-gold">
@@ -158,34 +167,66 @@ const FeaturedCarousel = () => {
   );  
 };
 
+function Sidebar({ isOpen, toggle }) {
+  return (
+    <div className={`fixed right-0 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <button className="absolute top-4 right-4 text-xl" onClick={toggle}>X</button>
+      <div className="p-4">
+        placeholder
+      </div>
+    </div>
+  );
+}
+
+
 function StartQuiz() {
   const [hovered, setHovered] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizStep, setQuizStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState([]);
 
-  const questions = [
-    {
-      question: "Are you looking for a popular Anime or lesser known Anime?",
-      options: ["Yes", "No", "Undecided"]
-    },
-    {
-      question: "Any Anime that includes NSFW themes?",
-      options: ["Yes", "No"]
-    },
-    {
-      question: "Are you looking for a specific type of Anime?",
-      options: ["Shounen", "Seinen", "Shoujo", "Josei", "Kids"]
-    },
-    {
-      question: "Sci-Fi, Slice of Life, or Fantasy?",
-      options: ["Sci-Fi", "Slice of Life", "Fantasy"]
-    },
-    {
-      question: "Do you want an Anime generally considered to be heavy and hard to follow e.g. Serial Experiments Lain, Neon Genesis Evangelion, Ergo Proxy?",
-      options: ["Yes", "No"]
-    }
-  ];
+const questions = [
+  {
+    question: "Welcome to the Anime Recommendation Quiz! Would you like to take the quiz to find the perfect Anime for you?",
+    options: ["Yes, let's begin!", "No, thanks.", "なに?"]
+  },
+  {
+    question: "Would you like to link your MyAnimeList profile for a more precise recommendation?",
+    options: ["Yes, I'll link it.", "No, proceed without linking."]
+  },
+  {
+    question: "Are you interested in popular mainstream Anime or lesser-known hidden gems?",
+    options: ["Popular Anime", "Lesser Known Anime", "Both", "Undecided"]
+  },
+  {
+    question: "Do you have preferences for Anime content, such as avoiding NSFW themes?",
+    options: ["Include NSFW Themes", "Avoid NSFW Themes", "No Preference"]
+  },
+  {
+    question: "Are you looking for a specific type of Anime? Choose the one that interests you the most.",
+    options: ["Shounen", "Seinen", "Shoujo", "Josei", "Kids", "No Preference"]
+  },
+  {
+    question: "Which genre are you most interested in? You can select more than one.",
+    options: ["Sci-Fi", "Slice of Life", "Fantasy", "Action", "Romance", "Horror", "Comedy"]
+  },
+  {
+    question: "Do you prefer Anime that is considered heavy and hard to follow, like Serial Experiments Lain?",
+    options: ["Yes", "No", "Sometimes"]
+  },
+  {
+    question: "What's your preference for episode length? Are you looking for a short or long series?",
+    options: ["Short (1-13 episodes)", "Medium (14-26 episodes)", "Long (27+ episodes)", "No Preference"]
+  },
+  {
+    question: "Do you have a preference for watching Anime in subbed (original language) or dubbed (localized language) version?",
+    options: ["Subbed", "Dubbed", "Either is fine"]
+  },
+  {
+    question: "Do you have a favorite Anime studio?",
+    options: ["Studio Ghibli", "Madhouse", "Sunrise", "Bones", "No Preference"]
+  }
+];
 
   const handleAnswerClick = (answer) => {
     setQuizAnswers(prevAnswers => [...prevAnswers, answer]);
@@ -425,11 +466,20 @@ function Footer() { // gradient?
 }
 
 function App() {
+  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="App">
       <Header />
       <Slogan />
       <FeaturedCarousel />
+      <button onClick={toggleSidebar} className="fixed right-4 top-4 px-4 py-2 bg-blue-950 text-white rounded">X</button>
+      <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} />
       <StartQuiz />
       <AnimeList />
       <Footer />
