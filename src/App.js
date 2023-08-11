@@ -150,14 +150,17 @@ const FeaturedCarousel = () => {
       {carouselData.length > 0 ? (
         <Carousel showThumbs={false} showStatus={false} showIndicators={false} autoPlay={true} centerMode={true} infiniteLoop={true} centerSlidePercentage={70}>
           {carouselData.map((item) => (
-            <div key={item.node.id}>
-              <img 
-                  src={item.node.main_picture.large} 
-                  alt={item.node.title} 
-                  className="w-full h-48 object-cover md:h-96"
-              />
-              <p className="font-nunito legend text-center text-white font-bold text-lg">{item.node.title}</p>
-            </div>
+            <div key={item.node.id} className="relative">
+            <a href={`https://myanimelist.net/anime/${item.node.id}`} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
+              <span className="sr-only">Link to {item.node.title}</span>
+            </a>
+            <img 
+                src={item.node.main_picture.large} 
+                alt={item.node.title} 
+                className="w-full h-48 object-cover md:h-96"
+            />
+            <p className="font-nunito legend text-center text-white font-bold text-lg">{item.node.title}</p>
+          </div>
           ))}
         </Carousel>
       ) : (
