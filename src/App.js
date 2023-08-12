@@ -170,16 +170,44 @@ const FeaturedCarousel = () => {
   );  
 };
 
-function Sidebar({ isOpen, toggle }) {
+// add better visuals to sidebar i.e. links, images, structure
+function Sidebar({ isOpen, toggle, animeId }) { 
+
+  const [animeNews, setAnimeNews] = useState([]);
+  
+  useEffect(() => {
+    const fetchAnimeNews = async () => {
+      try {
+        const response = await axios.get(`https://api.jikan.moe/v4/anime/5114/news`);
+        const newsData = response.data.data;
+        setAnimeNews(newsData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAnimeNews();
+  }, [animeId]);
+  
   return (
     <div className={`fixed right-0 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <button className="absolute top-4 right-4 text-xl" onClick={toggle}>X</button>
       <div className="p-4">
-        placeholder
+        {animeNews.length > 0 ? (
+          animeNews.map((news) => (
+            <div key={news.mal_id}>
+              <a href={news.url} target="_blank" rel="noopener noreferrer">{news.title}</a>
+              <p>{news.date}</p>
+              <p>Author: {news.author_username}</p>
+            </div>
+          ))
+        ) : (
+          <p>Loading news...</p>
+        )}
       </div>
     </div>
   );
 }
+  
 
 
 function StartQuiz() {
@@ -482,7 +510,7 @@ function App() {
       <Slogan />
       <FeaturedCarousel />
       <button onClick={toggleSidebar} className="fixed right-4 top-4 px-4 py-2 bg-blue-950 text-white rounded">X</button>
-      <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} animeId={1234} />
       <StartQuiz />
       <AnimeList />
       <Footer />
