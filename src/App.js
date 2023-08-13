@@ -8,6 +8,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import defaultsidebarimg from './images/defaultsidebar.jpeg';
 
 
 function Header() {
@@ -170,16 +171,15 @@ const FeaturedCarousel = () => {
   );  
 };
 
-// add better visuals to sidebar i.e. links, images, structure
-function Sidebar({ isOpen, toggle, animeId }) { 
-
+// fix image loading bug and make the news recent (not specific to one anime)
+function Sidebar({ isOpen, toggle, animeId }) {
   const [animeNews, setAnimeNews] = useState([]);
-  
+
   useEffect(() => {
     const fetchAnimeNews = async () => {
       try {
-        const response = await axios.get(`https://api.jikan.moe/v4/anime/5114/news`);
-        const newsData = response.data.data;
+        const response = await axios.get(`https://api.jikan.moe/v4/anime/5114/news`, {});
+        const newsData = response.data.data.slice(0, 5);
         setAnimeNews(newsData);
       } catch (error) {
         console.log(error);
@@ -187,17 +187,29 @@ function Sidebar({ isOpen, toggle, animeId }) {
     };
     fetchAnimeNews();
   }, [animeId]);
-  
+
   return (
-    <div className={`fixed right-0 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`fixed right-0 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <button className="absolute top-4 right-4 text-xl" onClick={toggle}>X</button>
       <div className="p-4">
         {animeNews.length > 0 ? (
           animeNews.map((news) => (
-            <div key={news.mal_id}>
-              <a href={news.url} target="_blank" rel="noopener noreferrer">{news.title}</a>
-              <p>{news.date}</p>
-              <p>Author: {news.author_username}</p>
+            <div key={news.mal_id} className="mb-4">
+              <a href={news.url} target="_blank" rel="noopener noreferrer" className="font-bold text-lg text-blue-900 hover:underline">{news.title}</a>
+              <p>{news.date.substring(0,10)}</p>
+              <p className="text-blue-600">Author: {news.author_username}</p>
+              {news.images.jpg.image_url ? (
+                <a href={`https://myanimelist.net/news/${news.mal_id}`} target="_blank" rel="noopener noreferrer">
+                  <img 
+                    src={news.images.jpg.image_url} 
+                    alt={news.title}
+                    className="w-full h-48 object-cover"
+                    onError={(e) => { e.target.onerror = null; e.target.src={defaultsidebarimg}; }}
+                  />
+                </a>
+              ) : (
+                <p className="text-red-500">Image Not Found on MAL</p>
+              )}
             </div>
           ))
         ) : (
@@ -286,7 +298,7 @@ const questions = [
       <div className='quizContainer'>
         <div className='bg'>
           <img id='animebg' src={animebg} alt='Anime BG' />
-          <div className={`font-poppins p-4 bg-yellow-500 rounded-full inline-block textOverlay ${hovered ? 'hover' : ''}`}>
+          <div className={"font-poppins p-4 bg-yellow-500 rounded-full inline-block textOverlay ${hovered ? 'hover' : ''}"}>
             <h1 id='question'>Which Anime should you watch next?</h1>
             <button
               id='quizButton'
@@ -460,7 +472,7 @@ useEffect(() => {
 };
 
 
-function Footer() { // gradient?
+function Footer() { 
   return (
     <div className='bg-gold'>
       <div className='container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
