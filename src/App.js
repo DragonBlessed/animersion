@@ -10,11 +10,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import defaultsidebarimg from './images/defaultsidebar.jpeg';
 
-
+// Header component for site navigation
 function Header() {
+  // State for managing the menu and hover state
   const [showMenu, setShowMenu] = useState(false);
   const [hoveredButton, setHoveredButton] = useState(null);
 
+  // Toggle the menu and set scroll behavior
   const toggleMenu = () => {
     setShowMenu(!showMenu);
     setHoveredButton(null);
@@ -24,7 +26,8 @@ function Header() {
       document.body.style.overflow = 'auto';
     }
   };
-
+  
+  // Handle mouse enter and leave events for buttons
   const handleButtonMouseEnter = (buttonId) => {
     setHoveredButton(buttonId);
   };
@@ -97,6 +100,7 @@ function Header() {
   );
 }
 
+// Slogan component for displaying a catchy slogan
 function Slogan() {
   return (
     <div className='slogan'>
@@ -121,9 +125,12 @@ function Slogan() {
   );
 }
 
+// FeaturedCarousel component for displaying featured anime
 const FeaturedCarousel = () => {
+  // State for storing carousel data
   const [carouselData, setCarouselData] = useState([]);
 
+  // Fetch carousel data from the MAL API
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -138,6 +145,7 @@ const FeaturedCarousel = () => {
     fetchData();
   }, []);
 
+  // Render the carousel or an error message if the data is not available
   if (!carouselData || carouselData.length === 0) {
     return (
       <div className="carousel-container mt-6 p-4 bg-gold text-center">
@@ -171,23 +179,37 @@ const FeaturedCarousel = () => {
   );  
 };
 
-// fix image loading bug and make the news recent (not specific to one anime)
-function Sidebar({ isOpen, toggle, animeId }) {
+// Sidebar component for displaying anime news
+// Add handling with vercel serverless functions
+function Sidebar({ isOpen, toggle }) {
   const [animeNews, setAnimeNews] = useState([]);
 
+  // Fetch the most popular anime news from the Jikan API
   useEffect(() => {
-    const fetchAnimeNews = async () => {
+    const fetchMostPopularAnimeNews = async () => {
       try {
-        const response = await axios.get(`https://api.jikan.moe/v4/anime/5114/news`, {});
-        const newsData = response.data.data.slice(0, 5);
+
+        // Fetching the top anime by airing
+        const airingResponse = await axios.get('https://api.jikan.moe/v4/top/anime', {
+          params: {
+            filter: 'airing',
+        },
+      });
+        const mostAiringAnimeId = airingResponse.data.data[0].mal_id;
+  
+        // Fetching the news related to the most aired anime
+        const newsResponse = await axios.get(`https://api.jikan.moe/v4/anime/${mostAiringAnimeId}/news`);
+        const newsData = newsResponse.data.data;
         setAnimeNews(newsData);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchAnimeNews();
-  }, [animeId]);
+  
+    fetchMostPopularAnimeNews();
+  }, []);
 
+  // Render the sidebar with news details
   return (
     <div className={`fixed right-0 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <button className="absolute top-4 right-4 text-xl" onClick={toggle}>X</button>
@@ -221,8 +243,9 @@ function Sidebar({ isOpen, toggle, animeId }) {
 }
   
 
-
+// Quiz component for starting the anime recommendation quiz
 function StartQuiz() {
+  // State variables for managing the quiz
   const [hovered, setHovered] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizStep, setQuizStep] = useState(0);
@@ -271,6 +294,7 @@ const questions = [
   }
 ];
 
+  // Handlers for various quiz interactions
   const handleAnswerClick = (answer) => {
     setQuizAnswers(prevAnswers => [...prevAnswers, answer]);
     if (quizStep < questions.length - 1) {
@@ -293,8 +317,10 @@ const questions = [
     setQuizAnswers([]);
   };
 
+  // Render the quiz or the start screen depending on the state
   if (!quizStarted) {
     return (
+      // Start screen
       <div className='quizContainer'>
         <div className='bg'>
           <img id='animebg' src={animebg} alt='Anime BG' />
@@ -313,6 +339,7 @@ const questions = [
       </div>
     );
   } else {
+    // Quiz questions
     return (
       <div className='quizContainer'>
         <div className='bg'>
@@ -347,6 +374,7 @@ const questions = [
   }
 }
 
+// AnimeList component for displaying top airing and popular anime in a list
 const AnimeList = () => { 
   const [airingPage, setAiringPage] = useState(1);
   const [popularPage, setPopularPage] = useState(1);
@@ -411,6 +439,7 @@ useEffect(() => {
     setPopularPage(previousPage);
   };
 
+  // Render the top airing and popular anime lists with pagination using JikanAPI
   return (
     <div className="animerankings">
       <div className="airinglist">
@@ -471,8 +500,9 @@ useEffect(() => {
   );
 };
 
-
+// Footer component for the application
 function Footer() { 
+  // Render the footer with quick links, social media, and contact form
   return (
     <div className='bg-gold'>
       <div className='container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
@@ -512,10 +542,12 @@ function App() {
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Function to toggle the sidebar
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+   // Render the main application
   return (
     <div className="App">
       <Header />
