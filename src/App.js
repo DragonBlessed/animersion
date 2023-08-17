@@ -180,38 +180,26 @@ const FeaturedCarousel = () => {
 };
 
 // Sidebar component for displaying anime news
-// Add handling with vercel serverless functions
 function Sidebar({ isOpen, toggle }) {
   const [animeNews, setAnimeNews] = useState([]);
 
-  // Fetch the most popular anime news from the Jikan API
   useEffect(() => {
     const fetchMostPopularAnimeNews = async () => {
       try {
-
-        // Fetching the top anime by airing
-        const airingResponse = await axios.get('https://api.jikan.moe/v4/top/anime', {
-          params: {
-            filter: 'airing',
-        },
-      });
-        const mostAiringAnimeId = airingResponse.data.data[0].mal_id;
-  
-        // Fetching the news related to the most aired anime
-        const newsResponse = await axios.get(`https://api.jikan.moe/v4/anime/${mostAiringAnimeId}/news`);
-        const newsData = newsResponse.data.data;
-        setAnimeNews(newsData);
+        const response = await axios.get('/api/jikan');
+        setAnimeNews(response.data);
       } catch (error) {
         console.log(error);
       }
     };
-  
+
     fetchMostPopularAnimeNews();
   }, []);
 
+
   // Render the sidebar with news details
   return (
-    <div className={`fixed right-0 w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+    <div className={`fixed right-0 w-full md:w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
       <button className="absolute top-4 right-4 text-xl" onClick={toggle}>X</button>
       <div className="p-4">
         {animeNews.length > 0 ? (
@@ -251,6 +239,14 @@ function StartQuiz() {
   const [quizStep, setQuizStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState([]);
 
+  const handleMALLogin = () => {
+    const clientId = process.env.MAL_CLIENT_ID;
+    const redirectUrl = process.env.MAL_REDIRECT_URL;
+  
+    const malAuthUrl = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUrl}`;
+    window.location.href = malAuthUrl;
+  };
+
 const questions = [
   {
     question: "Welcome to the Anime Recommendation Quiz! Would you like to take the quiz to find the perfect Anime for you?",
@@ -258,7 +254,7 @@ const questions = [
   },
   {
     question: "Would you like to link your MyAnimeList profile for a more precise recommendation?",
-    options: ["Yes, I'll link it.", "No, proceed without linking."]
+    options: [{ text: "Yes, I'll link it.", action: handleMALLogin }, "No, proceed without linking."]
   },
   {
     question: "Are you interested in popular mainstream Anime or lesser-known hidden gems?",
@@ -346,19 +342,23 @@ const questions = [
           <img id='animebg' src={animebg} alt='Anime BG' />
         </div>
         <div className='questionContainer'>
-        <div className="font-nunito p-4 bg-yellow-500 rounded-full inline-block">
+          <div className="font-nunito p-4 bg-yellow-500 rounded-full inline-block">
             <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
-            </div>
+          </div>
           <div className="flex flex-col items-center justify-center space-y-4">
-            {questions[quizStep].options.map((option, index) => (
-              <button
-                className="font-nunito bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
-                key={index}
-                onClick={() => handleAnswerClick(option)}
-              >
-                {option}
-              </button>
-            ))}
+            {questions[quizStep].options.map((option, index) => {
+              const buttonText = typeof option === "string" ? option : option.text;
+              const handleClick = typeof option === "string" ? () => handleAnswerClick(option) : option.action;
+              return (
+                <button
+                  className="font-nunito bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                  key={index}
+                  onClick={handleClick}
+                >
+                  {buttonText}
+                </button>
+              );
+            })}
             {quizStep > 0 && (
               <button
                 className="font-nunito bg-red-500 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
@@ -553,7 +553,7 @@ function App() {
       <Header />
       <Slogan />
       <FeaturedCarousel />
-      <button onClick={toggleSidebar} className="fixed right-4 top-4 px-4 py-2 bg-blue-950 text-white rounded">X</button>
+      <button onClick={toggleSidebar} className="fixed right-4 top-4 px-4 py-2 bg-blue-950 text-white rounded z-50">X</button>
       <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} animeId={1234} />
       <StartQuiz />
       <AnimeList />
