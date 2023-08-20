@@ -186,8 +186,18 @@ function Sidebar({ isOpen, toggle }) {
   useEffect(() => {
     const fetchMostPopularAnimeNews = async () => {
       try {
-        const response = await axios.get('/api/jikan');
-        setAnimeNews(response.data);
+        // Fetching the top anime by airing
+        const airingResponse = await axios.get('https://api.jikan.moe/v4/top/anime', {
+          params: {
+            filter: 'airing',
+          },
+        });
+        const mostAiringAnimeId = airingResponse.data.data[0].mal_id;
+
+        // Fetching the news related to the most aired anime
+        const newsResponse = await axios.get(`https://api.jikan.moe/v4/anime/${mostAiringAnimeId}/news`);
+        const newsData = newsResponse.data.data;
+        setAnimeNews(newsData);
       } catch (error) {
         console.log(error);
       }
