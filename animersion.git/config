@@ -2,6 +2,7 @@
 	repositoryformatversion = 0
 	filemode = true
 	bare = true
+	ignorecase = false
 [remote "origin"]
 	url = https://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@github.com/DragonBlessed/animersion.git
 	fetch = +refs/*:refs/*
