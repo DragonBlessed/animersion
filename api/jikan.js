@@ -17,6 +17,6 @@ export default async (req, res) => {
     res.status(200).json(newsData);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'Failed to fetch anime news' });
+    res.status(500).json({ error: error.message || 'Failed to fetch anime news' });
   }
 };
