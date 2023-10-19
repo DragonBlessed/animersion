@@ -238,6 +238,7 @@ function StartQuiz() {
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizStep, setQuizStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState([]);
+  
 
   const handleMALLogin = () => {
     const clientId = process.env.MAL_CLIENT_ID;
@@ -293,12 +294,73 @@ const questions = [
   // Handlers for various quiz interactions
   const handleAnswerClick = (answer) => {
     setQuizAnswers(prevAnswers => [...prevAnswers, answer]);
-    if (quizStep < questions.length - 1) {
-      setQuizStep(quizStep + 1);
+    if (quizStep === questions.length - 1) {
+      setQuizStep(questions.length); 
     } else {
-
+      setQuizStep(quizStep + 1);
     }
   };
+
+  const setAttributes = (quizAnswers) => {
+    let attributes = {
+      hasMALAccount: false,
+      likesPopular: false,
+      likesHiddenGems: false,
+      nsfw: false,
+      targetDemographic: null,
+      genreInterests: [],
+      wantsHeavy: false,
+      episodeLength: null,
+      subOrDub: null,
+      favStudio: null,
+      deep: false,
+    };
+  
+    // Mapping for single-value attributes
+    const singleValueMap = {
+      "Popular Anime": 'likesPopular',
+      "Lesser Known Anime": 'likesHiddenGems',
+      "Include NSFW Themes": 'nsfw',
+      "Short (1-13 episodes)": 'episodeLength',
+      "Medium (14-26 episodes)": 'episodeLength',
+      "Long (27+ episodes)": 'episodeLength',
+      "Subbed": 'subOrDub',
+      "Dubbed": 'subOrDub',
+    };
+  
+    // Array for multiple-value attributes
+    const multiValueArray = [
+      { answer: "Sci-Fi", attribute: 'genreInterests' },
+      { answer: "Slice of Life", attribute: 'genreInterests' },
+      { answer: "Fantasy", attribute: 'genreInterests' },
+      { answer: "Action", attribute: 'genreInterests' },
+      { answer: "Romance", attribute: 'genreInterests' },
+      { answer: "Horror", attribute: 'genreInterests' },
+      { answer: "Comedy", attribute: 'genreInterests' },
+    ];
+  
+    // Setting single-value attributes
+    for (const answer of quizAnswers) {
+      if (singleValueMap[answer]) {
+        attributes[singleValueMap[answer]] = answer;
+      }
+    }
+  
+    // Setting multiple-value attributes
+    for (const { answer, attribute } of multiValueArray) {
+      if (quizAnswers.includes(answer)) {
+        attributes[attribute].push(answer);
+      }
+    }
+  
+    // Special Cases
+    if (quizAnswers.includes("Seinen") && quizAnswers[6] === "Yes") {
+      attributes.deep = true;
+    }
+  
+    return attributes;
+  };
+
 
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
@@ -306,11 +368,17 @@ const questions = [
   const handleClick = () => {
     setHovered(false);
     setQuizStarted(true);
+    console.log(quizStep)
+    console.log(questions.length)
   };
 
   const handleResetClick = () => {
     setQuizStep(0);
     setQuizAnswers([]);
+  };
+
+  const handleQuizSubmit = () => {
+    const attributes = setAttributes(quizAnswers);
   };
 
   // Render the quiz or the start screen depending on the state
@@ -337,40 +405,58 @@ const questions = [
   } else {
     // Quiz questions
     return (
-      <div className='quizContainer'>
-        <div className='bg'>
-          <img id='animebg' src={animebg} alt='Anime BG' />
-        </div>
-        <div className='questionContainer'>
-          <div className="font-nunito p-4 bg-yellow-500 rounded-full inline-block">
-            <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
+        <div className='quizContainer'>
+          <div className='bg'>
+            <img id='animebg' src={animebg} alt='Anime BG' />
           </div>
-          <div className="flex flex-col items-center justify-center space-y-4">
-            {questions[quizStep].options.map((option, index) => {
-              const buttonText = typeof option === "string" ? option : option.text;
-              const handleClick = typeof option === "string" ? () => handleAnswerClick(option) : option.action;
-              return (
+          {quizStep < questions.length && (
+          <div className='questionContainer'>
+            <div className="font-nunito p-4 bg-yellow-500 rounded-full inline-block">
+              <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
+            </div>
+
+            <div className="flex flex-col items-center justify-center space-y-4">
+              {questions[quizStep].options.map((option, index) => {
+                const buttonText = typeof option === "string" ? option : option.text;
+                const handleClick = typeof option === "string" ? () => handleAnswerClick(option) : option.action;
+                return (
+                  <button
+                    className="font-nunito bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                    key={index}
+                    onClick={handleClick}
+                  >
+                    {buttonText}
+                  </button>
+                );
+              })}
+              
+              {quizStep > 0 && (
                 <button
-                  className="font-nunito bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
-                  key={index}
-                  onClick={handleClick}
+                  className="font-nunito bg-red-500 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                  onClick={handleResetClick}
                 >
-                  {buttonText}
+                  Reset Quiz
                 </button>
-              );
-            })}
-            {quizStep > 0 && (
-              <button
-                className="font-nunito bg-red-500 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
-                onClick={handleResetClick}
-              >
-                Reset Quiz
-              </button>
-            )}
+      
+              )}
+            </div>
           </div>
+          )}
+              {Number(quizStep) === Number(questions.length) && (
+                <div className='submitContainer'>
+                  <div className="flex flex-col items-center justify-center space-y-4">
+                    <button
+                      className="font-nunito bg-green-500 text-xl text-white rounded-md font-bold cursor-pointer px-8 py-4"
+                      onClick={handleQuizSubmit}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              )}
         </div>
-      </div>
-    );
+      
+    )
   }
 }
 
