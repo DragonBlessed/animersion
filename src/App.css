@@ -245,6 +245,28 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #ccc;
+}
+
+.toggle-button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.arrow-icon {
+  transition: transform 0.3s ease-in-out;
+}
+
+
 .quizContainer {
   position: relative;
   width: 100%;

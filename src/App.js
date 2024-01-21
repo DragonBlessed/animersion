@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import defaultsidebarimg from './images/defaultsidebar.jpeg';
 
+
 // Header component for site navigation
 function Header() {
   // State for managing the menu and hover state
@@ -179,6 +180,22 @@ const FeaturedCarousel = () => {
   );  
 };
 
+// Converted SVG icon in JSX format
+const ArrowIcon = ({ className }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className} // Pass the className prop to the SVG element
+  >
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+);
+
 // Sidebar component for displaying anime news
 function Sidebar({ isOpen, toggle }) {
   const [animeNews, setAnimeNews] = useState([]);
@@ -200,7 +217,11 @@ function Sidebar({ isOpen, toggle }) {
   // Render the sidebar with news details
   return (
     <div className={`fixed right-0 w-full md:w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-      <button className="absolute top-4 right-4 text-xl" onClick={toggle}>X</button>
+       <div className="sidebar-header">
+        <button className="toggle-button" onClick={toggle}>
+          <ArrowIcon className={`arrow-icon transform ${isOpen ? 'rotate-180' : 'rotate-0'}`} />
+        </button>
+      </div>
       <div className="p-4">
         {animeNews.length > 0 ? (
           animeNews.map((news) => (
@@ -626,7 +647,7 @@ function Footer() {
 
 function App() {
   
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Function to toggle the sidebar
   const toggleSidebar = () => {
