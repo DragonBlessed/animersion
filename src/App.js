@@ -10,7 +10,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import defaultsidebarimg from './images/defaultsidebar.jpeg';
 
-
 // Header component for site navigation
 function Header() {
   // State for managing the menu and hover state
@@ -181,18 +180,17 @@ const FeaturedCarousel = () => {
 };
 
 // Converted SVG icon in JSX format
-const ArrowIcon = ({ className }) => (
+const ArrowIcon = ({ isOpen }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className} // Pass the className prop to the SVG element
+    viewBox="0 0 474.34627 357.28423"
+    className={`arrow-icon ${isOpen ? 'open' : ''}`}
+    style={{ width: '30px', height: '30px' }}
   >
-    <path d="M19 12H5M12 19l-7-7 7-7" />
+    <path
+      d="m 245.4867,0.0062872 c -2.691,0.0801 -5.43464,0.92602 -7.76367,2.58399 h -0.008 L 3.0648323,175.11957 c -1.9122,1.4021 -3.08886004,3.754 -3.06446003906,6.125 0.0242999991,2.371 1.24896003906,4.6999 3.18946003906,6.0625 L 237.84998,352.49653 c 4.1817,3.2473 11.50327,6.59195 16.19727,3.66015 2.4974,-1.6471 3.82898,-4.8898 3.20898,-7.8164 l -21.28125,-101.16016 230.08985,23.93945 c 2.0789,0.21751 4.23786,-0.4842 5.79296,-1.88086 1.55511,-1.39666 2.48199,-3.46634 2.48829,-5.55664 v -157.9414 c 0.049,-10.531003 -8.87335,-11.915003 -16.03125,-11.000003 L 236.68592,117.78168 257.28553,13.621527 C 258.89711,4.5983372 252.3637,-0.1983628 245.4867,0.0062872 Z"
+      fill="black"
+    />
   </svg>
 );
 
@@ -216,16 +214,17 @@ function Sidebar({ isOpen, toggle }) {
 
   // Render the sidebar with news details
   return (
-    <div className={`fixed right-0 w-full md:w-64 h-full bg-white transform transition-transform duration-300 ease-in-out overflow-y-auto z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-       <div className="sidebar-header">
-        <button className="toggle-button" onClick={toggle}>
-          <ArrowIcon className={`arrow-icon transform ${isOpen ? 'rotate-180' : 'rotate-0'}`} />
+      <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <div className="sidebar-toggle">
+        <button onClick={toggle}>
+          <ArrowIcon isOpen={isOpen} />
         </button>
       </div>
-      <div className="p-4">
-        {animeNews.length > 0 ? (
-          animeNews.map((news) => (
-            <div key={news.mal_id} className="mb-4">
+      {isOpen && (
+        <div className="flex-1 p-4">
+          {animeNews.length > 0 ? (
+            animeNews.map((news) => (
+              <div key={news.mal_id} className="mb-4">
               <a href={news.url} target="_blank" rel="noopener noreferrer" className="font-bold text-lg text-blue-900 hover:underline">{news.title}</a>
               <p>{news.date.substring(0,10)}</p>
               <p className="text-blue-600">Author: {news.author_username}</p>
@@ -247,7 +246,8 @@ function Sidebar({ isOpen, toggle }) {
           <p>Loading news...</p>
         )}
       </div>
-    </div>
+      )}
+      </div>
   );
 }
   
@@ -660,7 +660,6 @@ function App() {
       <Header />
       <Slogan />
       <FeaturedCarousel />
-      <button onClick={toggleSidebar} className="fixed right-4 top-4 px-4 py-2 bg-blue-950 text-white rounded z-50">X</button>
       <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} animeId={1234} />
       <StartQuiz />
       <AnimeList />
@@ -670,3 +669,5 @@ function App() {
 }
 
 export default App;
+
+
