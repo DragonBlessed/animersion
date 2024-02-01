@@ -260,14 +260,58 @@ function StartQuiz() {
   const [quizStep, setQuizStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState([]);
   
-
-  const handleMALLogin = () => {
-    const clientId = process.env.MAL_CLIENT_ID;
-    const redirectUrl = process.env.MAL_REDIRECT_URL;
+function generateCodeVerifier() {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+    return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+  }
   
-    const malAuthUrl = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUrl}`;
-    window.location.href = malAuthUrl;
-  };
+const codeVerifier = generateCodeVerifier();
+const codeChallenge = codeVerifier;
+
+function generateState() {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+}
+const state = generateState();
+const handleMALLogin = () => {
+  const clientId = process.env.REACT_APP_MAL_CLIENT_ID || 'default_client_id';
+  const redirectUrl = process.env.REACT_APP_MAL_REDIRECT_URL || 'http://localhost:3000/callback';
+  const state = generateState(); // Generate a unique state value for CSRF protection
+
+  window.location.href = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_url=${redirectUrl}&code_challenge=${codeChallenge}&code_challenge_method=plain`;
+};
+
+const handleMALCallback = async (code) => {
+  try {
+      const response = await fetch('/api/mal', { // Adjust the endpoint as necessary
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              code: code,
+              codeVerifier: codeVerifier, // This should be the same verifier used initially
+          }),
+      });
+
+      const data = await response.json();
+      // Use the access token from data.access_token
+  } catch (error) {
+      console.error('Error exchanging authorization code:', error);
+  }
+};
+useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+
+  // Optionally verify the state value here for additional security
+
+  if (code) {
+    handleMALCallback(code);
+  }
+}, []);
 
 const questions = [
   {
