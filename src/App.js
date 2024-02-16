@@ -127,21 +127,20 @@ function Slogan() {
 
 // FeaturedCarousel component for displaying featured anime
 const FeaturedCarousel = () => {
-  // State for storing carousel data
+  // State hook to store the carousel data.
   const [carouselData, setCarouselData] = useState([]);
 
-  // Fetch carousel data from the MAL API
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('/api/mal');
-        const data = response.data.data;
-        setCarouselData(data);
+        // Make a GET request to the serverless function endpoint
+        const response = await axios.get('/api/mal'); 
+        setCarouselData(response.data.data); 
       } catch (error) {
-        console.log(error);
-        setCarouselData(undefined);
+        console.error("Failed to fetch carousel data:", error);
+        setCarouselData([]);
       }
-    };    
+    };
     fetchData();
   }, []);
 
@@ -690,12 +689,47 @@ function Footer() {
 }
 
 function App() {
-  
+  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Function to toggle the sidebar
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code && !accessToken) {
+      exchangeCodeForToken(code);
+    }
+  }, [accessToken]);
+
+  const exchangeCodeForToken = async (code) => {
+    try {
+      const response = await axios.post('/api/mal', { code });
+      const { access_token } = response.data;
+      localStorage.setItem('accessToken', access_token); // Store token in local storage
+      setAccessToken(access_token);
+    } catch (error) {
+      console.error('Error exchanging code for token:', error);
+    }
+  };
+
+  const fetchDataUsingToken = async () => {
+    if (!accessToken) {
+      console.log('No access token available.');
+      return;
+    }
+
+    try {
+      const response = await axios.get('MYANIMELIST_DATA_ENDPOINT', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+    } catch (error) {
+      console.error('Failed to fetch data:', error);
+    }
   };
 
    // Render the main application

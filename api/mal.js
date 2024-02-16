@@ -1,30 +1,26 @@
 export default async (req, res) => {
-  if (req.method === 'POST') {
-      const code = req.body.code;
-      const codeVerifier = req.body.codeVerifier; // Make sure to send this from the client
-      const redirectUrl = process.env.MAL_REDIRECT_URL;
-
+    if (req.method === 'GET') {
+      const clientID = process.env.MAL_CLIENT_ID; 
+      const url = `https://api.myanimelist.net/v2/anime/ranking?ranking_type=all&limit=10`;
+  
       try {
-          const tokenResponse = await fetch('https://myanimelist.net/v1/oauth2/token', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded'
-              },
-              body: new URLSearchParams({
-                  client_id: process.env.MAL_CLIENT_ID,
-                  grant_type: 'authorization_code',
-                  code: code,
-                  redirect_url: redirectUrl,
-                  code_verifier: codeVerifier
-              })
-          });
-
-          const data = await tokenResponse.json();
-          res.status(200).json(data);
+        const animeResponse = await fetch(url, {
+          headers: {
+            'X-MAL-CLIENT-ID': clientID,
+          },
+        });
+  
+        if (!animeResponse.ok) {
+          throw new Error('Failed to fetch anime data');
+        }
+  
+        const animeData = await animeResponse.json();
+        res.status(200).json(animeData);
       } catch (error) {
-          res.status(500).json({ error: 'Failed to exchange authorization code for tokens' });
+        console.error('Fetch error:', error);
+        res.status(500).json({ error: error.message });
       }
-  } else {
+    } else {
       res.status(405).json({ error: 'Method not allowed' });
-  }
-};
+    }
+  };
