@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
-import angelheadericon from './images/animeangel.png';
+import angelheadericon from './images/angelkAnime_GirlBG.png';
 import animebg from './images/animebg.webp';
 import 'tailwindcss/tailwind.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
