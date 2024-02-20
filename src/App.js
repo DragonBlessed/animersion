@@ -9,6 +9,7 @@ import { Carousel } from 'react-responsive-carousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import defaultsidebarimg from './images/defaultsidebar.jpeg';
+import TV from './images/LED_24_inch.png';
 
 // Header component for site navigation
 function Header() {
@@ -154,7 +155,10 @@ const FeaturedCarousel = () => {
   }
 
   return (
-    <div className="carousel-container mt-6 p-4 bg-gold">
+  <div className="tv-container"> 
+   <img src={TV} alt="TV Frame" className="tv-frame" />
+    <div className="tv-screen-background"></div>
+    <div className="carousel-container bg-gold">
       {carouselData.length > 0 ? (
         <Carousel showThumbs={false} showStatus={false} showIndicators={false} autoPlay={true} centerMode={true} infiniteLoop={true} centerSlidePercentage={70}>
           {carouselData.map((item) => (
@@ -165,7 +169,7 @@ const FeaturedCarousel = () => {
             <img 
                 src={item.node.main_picture.large} 
                 alt={item.node.title} 
-                className="w-full h-48 object-cover md:h-96"
+                className="w-full h-full object-contain"
             />
             <p className="font-nunito legend text-center text-white font-bold text-lg">{item.node.title}</p>
           </div>
@@ -175,6 +179,7 @@ const FeaturedCarousel = () => {
         <p className="text-center text-lg">Loading carousel data...</p>
       )}
     </div>
+  </div>
   );  
 };
 

@@ -217,15 +217,53 @@ body {
   top: 60px;
 }
 
-.carousel .carousel-slider {
-  background: transparent !important;
-  box-shadow: none !important;
+.tv-container {
+  position: relative;
+  width: 100%;
+  max-width: 2509px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  z-index: 0;
 }
 
-.carousel-container {
+.tv-frame {
+  max-width: 100%;
+  height: auto;
+  z-index: 0;
   background-color: gold;
 }
 
+.tv-screen-background {
+  position: absolute;
+  top: 44.86%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 97.3%;
+  height: 84.70%;
+  background: url('./images/animevalley.jpg') no-repeat center center;
+  background-size: cover;
+  z-index: 1; 
+}
+
+
+.carousel-container {
+  position: absolute;
+  top: 19.9%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50.33%;
+  height: 34.69%;
+  z-index: 2;
+}
+
+.carousel-container img {
+  object-fit: cover;
+}
+
+.carousel .carousel-slider {
+  background-color: #000;
+}
 
 .carousel .control-prev.control-arrow, 
 .carousel .control-next.control-arrow {
