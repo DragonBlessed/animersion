@@ -283,15 +283,15 @@ const handleMALLogin = () => {
   const clientId = process.env.REACT_APP_MAL_CLIENT_ID || 'default_client_id';
   const redirectUrl = process.env.REACT_APP_MAL_REDIRECT_URL || 'http://localhost:3000/callback';
   const state = generateState(); // Generate a unique state value for CSRF protection
+  localStorage.setItem('quizState', JSON.stringify({
+    quizStep,
+    quizAnswers,
+  }));
 
   window.location.href = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_url=${redirectUrl}&code_challenge=${codeChallenge}&code_challenge_method=plain`;
 };
 
 const handleMALCallback = async (code) => {
-  localStorage.setItem('quizState', JSON.stringify({
-    quizStep,
-    quizAnswers,
-  }));
   try {
       const response = await fetch('/api/mal', {
           method: 'POST',
