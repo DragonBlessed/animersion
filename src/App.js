@@ -315,7 +315,8 @@ useEffect(() => {
     const savedState = localStorage.getItem('quizState');
     if (savedState) {
       const { quizStep, quizAnswers } = JSON.parse(savedState);
-      setQuizStep(quizStep);
+      quizAnswers.concat("Yes, I'll link it.")
+      setQuizStep(quizStep + 1);
       setQuizAnswers(quizAnswers);
     }
   };
