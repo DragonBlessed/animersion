@@ -311,23 +311,22 @@ const handleMALCallback = async (code) => {
   }
 };
 useEffect(() => {
+  const restoreQuizState = () => {
+    const savedState = localStorage.getItem('quizState');
+    if (savedState) {
+      const { quizStep, quizAnswers } = JSON.parse(savedState);
+      setQuizStep(quizStep);
+      setQuizAnswers(quizAnswers);
+    }
+  };
+
+  restoreQuizState();
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 
 
   if (code) {
     handleMALCallback(code);
-  } else {
-    // Check for saved quiz state
-    const savedState = localStorage.getItem('quizState');
-    if (savedState) {
-      const { quizStep, quizAnswers } = JSON.parse(savedState);
-      setQuizStep(quizStep);
-      setQuizAnswers(quizAnswers);
-
-      // Clear saved state after restoring
-      localStorage.removeItem('quizState');
-    }
   }
 }, []);
 
