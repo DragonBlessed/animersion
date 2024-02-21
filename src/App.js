@@ -288,15 +288,19 @@ const handleMALLogin = () => {
 };
 
 const handleMALCallback = async (code) => {
+  localStorage.setItem('quizState', JSON.stringify({
+    quizStep,
+    quizAnswers,
+  }));
   try {
-      const response = await fetch('/api/mal', { // Adjust the endpoint as necessary
+      const response = await fetch('/api/mal', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
           },
           body: JSON.stringify({
               code: code,
-              codeVerifier: codeVerifier, // This should be the same verifier used initially
+              codeVerifier: codeVerifier, 
           }),
       });
 
@@ -310,10 +314,20 @@ useEffect(() => {
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
 
-  // Optionally verify the state value here for additional security
 
   if (code) {
     handleMALCallback(code);
+  } else {
+    // Check for saved quiz state
+    const savedState = localStorage.getItem('quizState');
+    if (savedState) {
+      const { quizStep, quizAnswers } = JSON.parse(savedState);
+      setQuizStep(quizStep);
+      setQuizAnswers(quizAnswers);
+
+      // Clear saved state after restoring
+      localStorage.removeItem('quizState');
+    }
   }
 }, []);
 
