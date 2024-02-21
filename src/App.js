@@ -318,6 +318,7 @@ useEffect(() => {
       quizAnswers.concat("Yes, I'll link it.")
       setQuizStep(quizStep + 1);
       setQuizAnswers(quizAnswers);
+      localStorage.removeItem('quizState');
     }
   };
 
