@@ -10,6 +10,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import defaultsidebarimg from './images/defaultsidebar.jpeg';
 import TV from './images/LED_24_inch.png';
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import { kv } from "@vercel/kv";
+
+export async function Cart({ params }) {
+  const cart = await kv.get(params.user);
+  return (
+    <div>
+      {cart?.map((item) => (
+        <div key={item.id}>
+          {item.id} - {item.quantity}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // Header component for site navigation
 function Header() {
@@ -755,6 +770,7 @@ function App() {
    // Render the main application
   return (
     <div className="App">
+      <SpeedInsights />
       <Header />
       <Slogan />
       <FeaturedCarousel />
