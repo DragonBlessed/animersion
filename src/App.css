@@ -241,7 +241,7 @@ body {
   transform: translate(-50%, -50%);
   width: 97.3%;
   height: 84.70%;
-  background: url('./images/animevalley.jpg') no-repeat center center;
+  background: url('./images/animevalley.webp') no-repeat center center;
   background-size: cover;
   z-index: 1; 
 }

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './App.css';
-import angelheadericon from './images/angelkAnime_GirlBG.png';
+import angelheadericon from './images/angelkAnime_GirlBG.webp';
 import animebg from './images/animebg.webp';
 import 'tailwindcss/tailwind.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import defaultsidebarimg from './images/defaultsidebar.jpeg';
-import TV from './images/LED_24_inch.png';
+import defaultsidebarimg from './images/defaultsidebar.webp';
+import TV from './images/LED_24_inch.webp';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { kv } from "@vercel/kv";
 
