@@ -478,7 +478,21 @@ const questions = [
 
   const handleQuizSubmit = () => {
     const attributes = setAttributes(quizAnswers);
+    saveQuizAnswers('clientId', quizAnswers);
   };
+
+  const saveQuizAnswers = async (clientId, quizAnswers) => {
+    try {
+      await axios.post('/api/saveQuizAnswers', {
+        clientId,
+        quizAnswers
+      });
+      console.log('Answers saved successfully');
+    } catch (error) {
+      console.error('Failed to save answers:', error);
+    }
+  };
+
 
   // Render the quiz or the start screen depending on the state
   if (!quizStarted) {
