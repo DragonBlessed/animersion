@@ -12,6 +12,8 @@ import defaultsidebarimg from './images/defaultsidebar.webp';
 import TV from './images/LED_24_inch.webp';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { kv } from "@vercel/kv";
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import FAQ from './FAQ.js'; // FAQ Page Route
 
 export async function Cart({ params }) {
   const cart = await kv.get(params.user);
@@ -67,7 +69,7 @@ function Header() {
                 <button id="home" className="dropdownButton">Home</button>
                 <button id="anime-genres" className="dropdownButton">Anime Genres</button>
                 <button id="mal-profile" className="dropdownButton">MAL Profile</button>
-                <button id="faq" className="dropdownButton">Faq</button>
+                <Link to="/faq" className="dropdownButton">Faq</Link>
               </div>
             </div>
           ) : (
@@ -99,15 +101,11 @@ function Header() {
               >
                 MAL Profile
               </button>
-              <button
-                id="faq"
-                className={`normalButton ${hoveredButton === 'faq' ? 'hover' : ''}`}
-                onClick={() => setHoveredButton(null)}
+                <Link to="/faq" className={`normalButton ${hoveredButton === 'faq' ? 'hover' : ''}`}
                 onMouseEnter={() => handleButtonMouseEnter('faq')}
-                onMouseLeave={handleButtonMouseLeave}
-              >
+                onMouseLeave={handleButtonMouseLeave}>
                 Faq
-              </button>
+              </Link>
             </>
           )}
         </div>
@@ -492,6 +490,17 @@ const questions = [
       console.error('Failed to save answers:', error);
     }
   };
+  
+  const getUsersAnimeList = async (accessToken) => {
+    const response = await fetch('https://api.myanimelist.net/v2/users/@me/animelist?fields=list_status', {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    const data = await response.json();
+    console.log(data);
+  };
 
 
   // Render the quiz or the start screen depending on the state
@@ -731,20 +740,36 @@ function Footer() {
         </div>
       </div>
       <div className="font-poppins text-center mt-8">
-        <p>Copyright @ DragonBlessed 2023</p>
+        <p>Copyright @ DragonBlessed 2024</p>
       </div>
     </div>
   )
 }
 
-function App() {
-  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
+const HomePage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Function to toggle the sidebar
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  return (
+    <>
+      <SpeedInsights />
+      <Header />
+      <Slogan />
+      <FeaturedCarousel />
+      <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} animeId={1234} />
+      <StartQuiz />
+      <AnimeList />
+      <Footer />
+    </>
+  );
+};
+
+function App() {
+  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -783,16 +808,15 @@ function App() {
 
    // Render the main application
   return (
-    <div className="App">
-      <SpeedInsights />
-      <Header />
-      <Slogan />
-      <FeaturedCarousel />
-      <Sidebar isOpen={isSidebarOpen} toggle={toggleSidebar} animeId={1234} />
-      <StartQuiz />
-      <AnimeList />
-      <Footer />
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/faq" element={<FAQ />} />
+          {/* Routes to be filled here */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
