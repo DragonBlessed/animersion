@@ -1,4 +1,98 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import './FAQ.css';
+import angelheadericon from './images/angelkAnime_GirlBG.webp';
+import 'tailwindcss/tailwind.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import HomePage from './App.js'; // HomePage Page Route
+
+// Header component for site navigation
+function Header() {
+  // State for managing the menu and hover state
+  const [showMenu, setShowMenu] = useState(false);
+  const [hoveredButton, setHoveredButton] = useState(null);
+
+  // Toggle the menu and set scroll behavior
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+    setHoveredButton(null);
+    if (!showMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  };
+  
+  // Handle mouse enter and leave events for buttons
+  const handleButtonMouseEnter = (buttonId) => {
+    setHoveredButton(buttonId);
+  };
+
+  const handleButtonMouseLeave = () => {
+    setHoveredButton(null);
+  };
+
+  return (
+      <div className='header'>
+        <div className='headerTop'>
+          <div id='title'>
+            <img id='headericon' src={angelheadericon} alt='Header Icon' />
+            <h1 id='headertitle'>Animersion</h1>
+          </div>
+        <div className='toplinks'>
+          {window.innerWidth < 700 ? (
+            <div className={`dropdown ${showMenu ? 'active' : ''}`}>
+              <button onClick={toggleMenu} className="menuButton">Menu</button>
+              <div className='dropdown-content'>
+                <Link to="/" className="dropdownButton">Home</Link>
+                <button id="anime-genres" className="dropdownButton">Anime Genres</button>
+                <button id="mal-profile" className="dropdownButton">MAL Profile</button>
+                <Link to="/faq" className="dropdownButton">Faq</Link>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Link to="/"
+                className={`normalButton ${hoveredButton === 'home' ? 'hover' : ''}`}
+                onClick={() => setHoveredButton(null)}
+                onMouseEnter={() => handleButtonMouseEnter('home')}
+                onMouseLeave={handleButtonMouseLeave}
+              >
+                Home
+              </Link>
+              <button
+                id="anime-genres"
+                className={`normalButton ${hoveredButton === 'anime-genres' ? 'hover' : ''}`}
+                onClick={() => setHoveredButton(null)}
+                onMouseEnter={() => handleButtonMouseEnter('anime-genres')}
+                onMouseLeave={handleButtonMouseLeave}
+              >
+                Anime Genres
+              </button>
+              <button
+                id="mal-profile"
+                className={`normalButton ${hoveredButton === 'mal-profile' ? 'hover' : ''}`}
+                onClick={() => setHoveredButton(null)}
+                onMouseEnter={() => handleButtonMouseEnter('mal-profile')}
+                onMouseLeave={handleButtonMouseLeave}
+              >
+                MAL Profile
+              </button>
+                <Link to="/faq" className={`normalButton ${hoveredButton === 'faq' ? 'hover' : ''}`}
+                onMouseEnter={() => handleButtonMouseEnter('faq')}
+                onMouseLeave={handleButtonMouseLeave}>
+                Faq
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 
 const FAQ = () => {
   const faqs = [
@@ -49,4 +143,55 @@ const FAQ = () => {
   );
 };
 
-export default FAQ;
+// Footer component for the application
+function Footer() { 
+  // Render the footer with quick links, social media, and contact form
+  return (
+    <div className='bg-gold'>
+      <div className='container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
+        <div>
+          <h3 className='font-poppins text-lg font-bold mb-4'>Quick Links</h3>
+          <ul>
+            <li><a href="/" className="font-nunito hover:underline">Home</a></li>
+            <li><a href="/faq" className="font-nunito hover:underline">Faq</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="font-poppins text-lg font-bold mb-4">Social Media</h3>
+          <a href='https://github.com/DragonBlessed' target='_blank' rel='noopener noreferrer'>
+            <FontAwesomeIcon icon={faGithub} />
+          </a>
+        </div>
+        <div>
+          <h3 className="font-poppins text-lg font-bold mb-4">Contact Us</h3>
+          <form>
+            <input type="text" placeholder="Name" className="mb-2 p-2 w-full"/>
+            <input type="email" placeholder="Email" className="mb-2 p-2 w-full"/>
+            <textarea placeholder="Message" className="mb-2 p-2 w-full"></textarea>
+            <button className="font-poppins bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
+              Send
+            </button>
+          </form>
+        </div>
+      </div>
+      <div className="font-poppins text-center mt-8">
+        <p>Copyright @ DragonBlessed 2024</p>
+      </div>
+    </div>
+  )
+}
+
+
+const EntireFAQPage = () => {
+
+  return (
+    <>
+      <Header />
+      <FAQ />
+      <Footer />
+    </>
+  );
+};
+
+export default EntireFAQPage;
+

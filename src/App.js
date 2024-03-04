@@ -66,7 +66,7 @@ function Header() {
             <div className={`dropdown ${showMenu ? 'active' : ''}`}>
               <button onClick={toggleMenu} className="menuButton">Menu</button>
               <div className='dropdown-content'>
-                <button id="home" className="dropdownButton">Home</button>
+                <Link to="/" className="dropdownButton">Home</Link>
                 <button id="anime-genres" className="dropdownButton">Anime Genres</button>
                 <button id="mal-profile" className="dropdownButton">MAL Profile</button>
                 <Link to="/faq" className="dropdownButton">Faq</Link>
@@ -74,15 +74,14 @@ function Header() {
             </div>
           ) : (
             <>
-              <button
-                id="home"
+              <Link to="/"
                 className={`normalButton ${hoveredButton === 'home' ? 'hover' : ''}`}
                 onClick={() => setHoveredButton(null)}
                 onMouseEnter={() => handleButtonMouseEnter('home')}
                 onMouseLeave={handleButtonMouseLeave}
               >
                 Home
-              </button>
+              </Link>
               <button
                 id="anime-genres"
                 className={`normalButton ${hoveredButton === 'anime-genres' ? 'hover' : ''}`}
