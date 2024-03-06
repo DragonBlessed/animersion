@@ -147,7 +147,7 @@ const FeaturedCarousel = () => {
     const fetchData = async () => {
       try {
         // Make a GET request to the serverless function endpoint
-        const response = await axios.get('/api/mal'); 
+        const response = await axios.get('../api/mal'); 
         setCarouselData(response.data.data); 
       } catch (error) {
         console.error("Failed to fetch carousel data:", error);
@@ -218,7 +218,7 @@ function Sidebar({ isOpen, toggle }) {
   useEffect(() => {
     const fetchMostPopularAnimeNews = async () => {
       try {
-        const response = await axios.get('/api/jikan');
+        const response = await axios.get('../api/jikan');
         setAnimeNews(response.data);
       } catch (error) {
         console.log(error);
@@ -279,7 +279,9 @@ function StartQuiz() {
 function generateCodeVerifier() {
   const array = new Uint8Array(32);
   window.crypto.getRandomValues(array);
-    return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+  const codeVerifier = Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+  localStorage.setItem('codeVerifier', codeVerifier); // Store it for later use
+  return codeVerifier;
   }
   
 const codeVerifier = generateCodeVerifier();
@@ -305,7 +307,7 @@ const handleMALLogin = () => {
 
 const handleMALCallback = async (code) => {
   try {
-      const response = await fetch('/api/mal', {
+      const response = await fetch('../api/mal', {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -347,7 +349,7 @@ useEffect(() => {
 const questions = [
   {
     question: "Welcome to the Anime Recommendation Quiz! Would you like to take the quiz to find the perfect Anime for you?",
-    options: ["Yes, let's begin!", "No, thanks.", "なに?"]
+    options: ["Yes, let's begin!", "なに?"]
   },
   {
     question: "Would you like to link your MyAnimeList profile for a more precise recommendation?",
@@ -383,7 +385,7 @@ const questions = [
   },
   {
     question: "Do you have a favorite Anime studio?",
-    options: ["Studio Ghibli", "Madhouse", "Sunrise", "Bones", "No Preference"]
+    options: ["Studio Ghibli", "Madhouse", "Sunrise", "Bones", "Mappa", "No Preference"]
   }
 ];
 
@@ -780,8 +782,16 @@ function App() {
   }, [accessToken]);
 
   const exchangeCodeForToken = async (code) => {
+    const codeVerifier = localStorage.getItem('codeVerifier');
+    if (!codeVerifier) {
+      console.error('Code Verifier not found');
+      return;
+    }
     try {
-      const response = await axios.post('/api/mal', { code });
+      const response = await axios.post('../api/mal', {
+      code: code,
+      codeVerifier: codeVerifier,
+    });
       const { access_token } = response.data;
       localStorage.setItem('accessToken', access_token); // Store token in local storage
       setAccessToken(access_token);

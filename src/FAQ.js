@@ -92,6 +92,31 @@ function Header() {
   );
 }
 
+// Slogan component for displaying a catchy slogan
+function Slogan() {
+  return (
+    <div className='slogan'>
+      <div className="text-container">
+        <h3 className="sloganheader">
+          <span>Your Golden Gateway <br /> into the Anime Universe.</span>
+        </h3>
+      </div>
+      <div className="blobs_1"></div>
+      <div className="blobs_2"></div>
+      <div className="blobs_3"></div>
+      <div className="blobs_4"></div>
+      <div className="blobs_5"></div>
+      <div className="blobs_6"></div>
+      <div className="blobs_7"></div>
+      <div className="blobs_8"></div>
+      <div className="blobs_9"></div>
+      <div className="blobs_10"></div>
+      <div className="blobs_11"></div>
+      <div className="blobs_12"></div>
+    </div>
+  );
+}
+
 
 
 const FAQ = () => {
@@ -126,7 +151,7 @@ const FAQ = () => {
     },
     {
       question: "Are there any plans for new features?",
-      answer: "We continuously work on improving Animersion and adding new features. Keep an eye on our updates through our website."
+      answer: "We continuously work on improving Animersion and adding new features. Keep an eye on our updates through our website/repo."
     }
   ];
 
@@ -187,6 +212,7 @@ const EntireFAQPage = () => {
   return (
     <>
       <Header />
+      <Slogan />
       <FAQ />
       <Footer />
     </>
