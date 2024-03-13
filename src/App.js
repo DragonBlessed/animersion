@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 import angelheadericon from './images/angelkAnime_GirlBG.webp';
@@ -14,6 +14,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { kv } from "@vercel/kv";
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import FAQ from './FAQ.js'; // FAQ Page Route
+import emailjs from '@emailjs/browser';
 
 export async function Cart({ params }) {
   const cart = await kv.get(params.user);
@@ -712,6 +713,39 @@ useEffect(() => {
 // Footer component for the application
 function Footer() { 
   // Render the footer with quick links, social media, and contact form
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stateMessage, setStateMessage] = useState(null);
+
+  const sendEmail = (e) => {
+    e.persist();
+    e.preventDefault();
+    setIsSubmitting(true);
+    emailjs.sendForm(
+      process.env.REACT_APP_SERVICE_ID,
+      process.env.REACT_APP_TEMPLATE_ID,
+      e.target,
+      process.env.REACT_APP_PUBLIC_KEY
+    ).then(
+      (result) => {
+        setStateMessage('Message sent!');
+        setIsSubmitting(false);
+        setTimeout(() => {
+          setStateMessage(null);
+        }, 5000); // hide message after 5 seconds
+      },
+      (error) => {
+        setStateMessage('Something went wrong, please try again later.');
+        setIsSubmitting(false);
+        setTimeout(() => {
+          setStateMessage(null);
+        }, 5000); // hide message after 5 seconds
+      }
+    );
+    // Clears the form after sending the email
+    e.target.reset();
+  };
+
+
   return (
     <div className='bg-gold'>
       <div className='container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
@@ -730,14 +764,15 @@ function Footer() {
         </div>
         <div>
           <h3 className="font-poppins text-lg font-bold mb-4">Contact Us</h3>
-          <form>
-            <input type="text" placeholder="Name" className="mb-2 p-2 w-full"/>
-            <input type="email" placeholder="Email" className="mb-2 p-2 w-full"/>
-            <textarea placeholder="Message" className="mb-2 p-2 w-full"></textarea>
-            <button className="font-poppins bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all">
-              Send
+          <form onSubmit={sendEmail}>
+            <input type="text" name="user_name" placeholder="Name" className="mb-2 p-2 w-full" />
+            <input type="email" name="user_email" placeholder="Email" className="mb-2 p-2 w-full" />
+            <textarea name="message" placeholder="Message" className="mb-2 p-2 w-full"></textarea>
+            <button type="submit" className="font-poppins bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700 transition-all" disabled={isSubmitting}>
+              {isSubmitting ? 'Sending...' : 'Send'}
             </button>
           </form>
+          {stateMessage && <p className="text-white py-4">{stateMessage}</p>}
         </div>
       </div>
       <div className="font-poppins text-center mt-8">
