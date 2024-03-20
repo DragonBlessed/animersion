@@ -307,24 +307,42 @@ const handleMALLogin = () => {
 };
 
 const handleMALCallback = async (code) => {
-  try {
-      const response = await fetch('../api/mal', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              code: code,
-              codeVerifier: codeVerifier, 
-          }),
-      });
+  // Retrieve the codeVerifier from localStorage
+  const codeVerifier = localStorage.getItem('codeVerifier');
+  if (!codeVerifier) {
+    console.error('Code Verifier not found');
+    return;
+  }
 
-      const data = await response.json();
-      // Use the access token from data.access_token
+  const clientId = process.env.REACT_APP_MAL_CLIENT_ID;
+  const redirectUri = process.env.REACT_APP_MAL_REDIRECT_URL;
+
+  const params = new URLSearchParams();
+  params.append('client_id', clientId);
+  params.append('code', code);
+  params.append('code_verifier', codeVerifier);
+  params.append('grant_type', 'authorization_code');
+  params.append('redirect_uri', redirectUri);
+
+  try {
+    const response = await fetch('https://myanimelist.net/v1/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+    });
+
+    if (!response.ok) {
+      console.error(`Token exchange failed with status: ${response.status}`, await response.text());
+      return;
+    }
+
+    const data = await response.json();
+    console.log('Access Token:', data.access_token);
   } catch (error) {
-      console.error('Error exchanging authorization code:', error);
+    console.error('Token exchange error:', error);
   }
 };
+
 useEffect(() => {
   const restoreQuizState = () => {
     const savedState = localStorage.getItem('quizState');
@@ -742,7 +760,7 @@ function Footer() {
         setFormErrors(errors);
         return; // Stop submission if there's any error
     }
-    
+
     setIsSubmitting(true);
     emailjs.sendForm(
       process.env.REACT_APP_SERVICE_ID,
