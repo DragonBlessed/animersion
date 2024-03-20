@@ -22,36 +22,38 @@ export default async (req, res) => {
       }
     } else if (req.method === 'POST') {
       const { code, codeVerifier } = req.body;
-      const tokenEndpoint = 'https://myanimelist.net/v1/oauth2/token';
-      const client_id = process.env.MAL_CLIENT_ID;
-      const redirect_uri = process.env.MAL_REDIRECT_URL;
+      const clientId = process.env.MAL_CLIENT_ID;
+      const redirectUri = process.env.MAL_REDIRECT_URL;
     
       const params = new URLSearchParams();
-      params.append('client_id', client_id);
+      params.append('client_id', clientId);
       params.append('code', code);
       params.append('code_verifier', codeVerifier);
       params.append('grant_type', 'authorization_code');
-      params.append('redirect_uri', redirect_uri);
+      params.append('redirect_uri', redirectUri);
     
       try {
-        const response = await fetch(tokenEndpoint, {
+        const tokenResponse = await fetch('https://myanimelist.net/v1/oauth2/token', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: params,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params.toString(),
         });
-    
-        if (!response.ok) {
-          throw new Error(`Token exchange failed: ${response.statusText}`);
+  
+        if (!tokenResponse.ok) {
+          throw new Error(`Token exchange failed with status: ${tokenResponse.status}`);
         }
-    
-        const data = await response.json();
+  
+        const data = await tokenResponse.json();
         res.status(200).json(data);
       } catch (error) {
         console.error('Token exchange error:', error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Token exchange failed', details: error.message });
       }
     } else {
-      res.setHeader('Allow', ['POST', 'GET']);
+      // Handle other methods
+      res.setHeader('Allow', ['POST']);
       res.status(405).json({ error: 'Method not allowed' });
     }
   };
