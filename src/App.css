@@ -136,7 +136,7 @@ body {
   height: 100%;
   background-color: goldenrod;
   z-index: 3;
-  animation: slideDoor 8s infinite;
+  animation: slideDoor 120s infinite;
 }
 
 .slogan::before {
@@ -160,18 +160,7 @@ body {
 .slogan .text-container {
   position: relative;
   z-index: 2;
-  animation: fadeText 8s infinite;
 }
-
-@keyframes fadeText {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-}
-Key A
 
 .blobs_1, .blobs_2, .blobs_3, .blobs_4, .blobs_5, .blobs_6, .blobs_7, .blobs_8, .blobs_9, .blobs_10, .blobs_11, .blobs_12 {
   position: absolute;
