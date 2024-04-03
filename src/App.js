@@ -276,6 +276,8 @@ function StartQuiz() {
   const [quizStarted, setQuizStarted] = useState(false);
   const [quizStep, setQuizStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState([]);
+  const [animationStage, setAnimationStage] = useState('enter')
+  const [contentKey, setContentKey] = useState(0);
   
 function generateCodeVerifier() {
   const array = new Uint8Array(32);
@@ -410,12 +412,15 @@ const questions = [
 
   // Handlers for various quiz interactions
   const handleAnswerClick = (answer) => {
-    setQuizAnswers(prevAnswers => [...prevAnswers, answer]);
-    if (quizStep === questions.length - 1) {
-      setQuizStep(questions.length); 
-    } else {
-      setQuizStep(quizStep + 1);
-    }
+    setAnimationStage('exit');
+    setTimeout(() => {
+      setQuizAnswers(prevAnswers => [...prevAnswers, answer]);
+      if (quizStep < questions.length - 1) {
+        setQuizStep(quizStep + 1);
+      } else {
+      }
+      setAnimationStage('enter');
+    }, 500);
   };
 
   const setAttributes = (quizAnswers) => {
@@ -488,10 +493,19 @@ const questions = [
     console.log(quizStep)
     console.log(questions.length)
   };
-
-  const handleResetClick = () => {
-    setQuizStep(0);
-    setQuizAnswers([]);
+  
+  const handleNextQuestion = () => {
+    if (quizStep < questions.length - 1) {
+      setContentKey(prevKey => prevKey + 1);
+      setQuizStep(quizStep + 1);
+    }
+  };
+  
+  const handlePrevQuestion = () => {
+    if (quizStep > 0) {
+      setContentKey(prevKey => prevKey + 1);
+      setQuizStep(quizStep - 1);
+    }
   };
 
   const handleQuizSubmit = () => {
@@ -552,7 +566,7 @@ const questions = [
             <img id='animebg' src={animebg} alt='Anime BG' />
           </div>
           {quizStep < questions.length && (
-          <div className='questionContainer'>
+          <div key={contentKey} className={`questionContainer ${animationStage === 'enter' ? 'fadeEnter' : 'fadeExit'}`}> 
             <div className="font-nunito p-4 bg-yellow-500 rounded-full inline-block">
               <h2 className="flex flex-col items-center justify-center space-y-4">{questions[quizStep].question}</h2>
             </div>
@@ -572,15 +586,23 @@ const questions = [
                 );
               })}
               
-              {quizStep > 0 && (
-                <button
-                  className="font-nunito bg-red-500 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
-                  onClick={handleResetClick}
-                >
-                  Reset Quiz
-                </button>
-      
-              )}
+              <div className="arrowButtonsContainer">
+                {quizStep > 0 && (
+                  <button
+                    className="navigationButton prev"
+                    onClick={handlePrevQuestion}
+                  >
+                  </button>
+                )}
+
+                {(quizStep < questions.length - 1 && quizStep !== 0) && (
+                  <button
+                    className="navigationButton next"
+                    onClick={handleNextQuestion}
+                  >
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           )}
@@ -608,6 +630,7 @@ const AnimeList = () => {
   const [popularPage, setPopularPage] = useState(1);
   const [airingListData, setAiringListData] = useState([]);
   const [popularListData, setPopularListData] = useState([]);
+  const [listAnimationStage, setListAnimationStage] = useState('enter');
 
 useEffect(() => {
   const fetchAiringRankings = async () => {
@@ -648,29 +671,45 @@ useEffect(() => {
 }, [popularPage]);
 
   const handleAiringNextPage = () => {
-    const nextPage = airingPage + 1;
-    setAiringPage(nextPage);
+    setListAnimationStage('exit');
+    setTimeout(() => {
+      const nextPage = airingPage + 1;
+      setAiringPage(nextPage);
+      setListAnimationStage('enter');
+    }, 500);
   };
 
   const handleAiringPreviousPage = () => {
+    setListAnimationStage('exit');
+    setTimeout(() => {
     const previousPage = airingPage - 1;
     setAiringPage(previousPage);
+    setListAnimationStage('enter');
+    }, 500);
   };
 
   const handlePopularNextPage = () => {
+    setListAnimationStage('exit');
+    setTimeout(() => {
     const nextPage = popularPage + 1;
     setPopularPage(nextPage);
+    setListAnimationStage('enter');
+    }, 500);
   };
 
   const handlePopularPreviousPage = () => {
+    setListAnimationStage('exit');
+    setTimeout(() => {
     const previousPage = popularPage - 1;
     setPopularPage(previousPage);
+    setListAnimationStage('enter');
+    }, 500);
   };
 
   // Render the top airing and popular anime lists with pagination using JikanAPI
   return (
     <div className="animerankings">
-      <div className="airinglist">
+      <div className={`airinglist ${listAnimationStage === 'enter' ? 'fadeEnter' : 'fadeExit'}`}>
         <h2>Top Airing Anime</h2>
         {airingListData && airingListData.length > 0 ? (
           <ul>
@@ -697,7 +736,7 @@ useEffect(() => {
           </button>
         </div>
       </div>
-      <div className="popularlist">
+      <div className={`popularlist ${listAnimationStage === 'enter' ? 'fadeEnter' : 'fadeExit'}`}>
         <h2>Popular Anime</h2>
         {popularListData && popularListData.length > 0 ? (
           <ul>

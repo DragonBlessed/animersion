@@ -5,8 +5,8 @@
 
 @keyframes goldShimmer {
   0% {
-    color: #FFFFFF;
-    text-shadow: none; 
+    color: navy;
+    text-shadow: 1px 3px 2px gold; 
   }
   100% {
     color: #FFD700;
@@ -441,6 +441,61 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.arrowButtonsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.navigationButton {
+  background-color: goldenrod;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+}
+
+.navigationButton.prev::before {
+  content: '←'; /* Left arrow icon */
+}
+
+.navigationButton.next::before {
+  content: '→'; /* Right arrow icon */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fadeEnter {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.fadeExit {
+  animation: fadeOut 0.5s ease-in-out forwards;
 }
 
 .submitContainer {
