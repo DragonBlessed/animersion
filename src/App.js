@@ -918,7 +918,7 @@ function App() {
   const exchangeCodeForToken = async (code) => {
     const codeVerifier = localStorage.getItem('codeVerifier');
     if (!codeVerifier) {
-      console.error('Code Verifier not found');
+      console.error('Code Verifier not found'); // Handle error
       return;
     }
     try {
