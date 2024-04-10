@@ -305,7 +305,7 @@ const initiateOAuthFlow = () => {
   const codeChallenge = codeVerifier; // For PKCE
   const state = generateRandomState();
   const clientId = process.env.REACT_APP_MAL_CLIENT_ID;
-  const redirectUri = encodeURIComponent(process.env.REACT_APP_MAL_REDIRECT_URI);
+  const redirectUri = encodeURIComponent(process.env.REACT_APP_MAL_REDIRECT_URL);
 
   const authUrl = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&code_challenge=${codeChallenge}&state=${state}&redirect_uri=${redirectUri}&code_challenge_method=plain`;
 
