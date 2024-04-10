@@ -279,33 +279,33 @@ function StartQuiz() {
   const [animationStage, setAnimationStage] = useState('enter')
   const [contentKey, setContentKey] = useState(0);
   
-function generateCodeVerifier() {
-  const array = new Uint8Array(32);
-  window.crypto.getRandomValues(array);
-  const codeVerifier = Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
-  localStorage.setItem('codeVerifier', codeVerifier); // Store it for later use
-  return codeVerifier;
-  }
-  
-const codeVerifier = generateCodeVerifier();
-const codeChallenge = codeVerifier;
+// Function to initiate the OAuth flow with PKCE
+const initiateOAuthFlow = () => {
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = codeVerifier; // For PKCE
+  const state = generateRandomState();
+  const clientId = process.env.REACT_APP_MAL_CLIENT_ID;
+  const redirectUri = encodeURIComponent(process.env.REACT_APP_MAL_REDIRECT_URI);
 
-function generateState() {
+  const authUrl = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&code_challenge=${codeChallenge}&state=${state}&redirect_uri=${redirectUri}&code_challenge_method=plain`;
+
+  window.location.href = authUrl;
+};
+
+const generateCodeVerifier = () => {
   const array = new Uint8Array(32);
   window.crypto.getRandomValues(array);
   return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
-}
-const state = generateState();
-const handleMALLogin = () => {
-  const clientId = process.env.REACT_APP_MAL_CLIENT_ID || 'default_client_id';
-  const redirectUrl = process.env.REACT_APP_MAL_REDIRECT_URL || 'http://localhost:3000/callback';
-  const state = generateState(); // Generate a unique state value for CSRF protection
-  localStorage.setItem('quizState', JSON.stringify({
-    quizStep,
-    quizAnswers,
-  }));
+};
 
-  window.location.href = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&state=${state}&redirect_url=${redirectUrl}&code_challenge=${codeChallenge}&code_challenge_method=plain`;
+const generateRandomState = () => {
+  const array = new Uint8Array(32);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+};
+
+const handleMALLogin = () => {
+  initiateOAuthFlow();
 };
 
 const handleMALCallback = async (code) => {
@@ -346,26 +346,27 @@ const handleMALCallback = async (code) => {
 };
 
 useEffect(() => {
-  const restoreQuizState = () => {
+  const restoreQuizStateAndHandleOAuthCallback = () => {
     const savedState = localStorage.getItem('quizState');
     if (savedState) {
       const { quizStep, quizAnswers } = JSON.parse(savedState);
-      quizAnswers.concat("Yes, I'll link it.")
+      quizAnswers.concat("Yes, I'll link it.");
       setQuizStep(quizStep + 1);
       setQuizAnswers(quizAnswers);
       localStorage.removeItem('quizState');
     }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+      // Placeholder for handling the OAuth callback
+      console.log("Handle OAuth Callback with code:", code);
+    }
   };
 
-  restoreQuizState();
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-
-
-  if (code) {
-    handleMALCallback(code);
-  }
+  restoreQuizStateAndHandleOAuthCallback();
 }, []);
+
 
 const questions = [
   {
