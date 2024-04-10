@@ -269,7 +269,7 @@ function Sidebar({ isOpen, toggle }) {
 }
 
 // handling the OAuth callback from MAL
-const MALCallback = () => {
+const MALCallback = ({ exchangeCodeForToken }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -279,11 +279,11 @@ const MALCallback = () => {
     if (code) {
       exchangeCodeForToken(code).then(() => {
         navigate('/'); // Redirect user to home page after successful login
-      });
+      }).catch(error => console.error('Error processing the token exchange:', error));
     } else {
-      navigate('/'); // Redirect to home if no code is found, adjust as necessary
+      navigate('/'); // Redirect to home if no code is found
     }
-  }, [location, navigate]);
+  }, [location, navigate, exchangeCodeForToken]);
 
   return <div>Processing your login...</div>; // Show a loading message
 };
@@ -914,20 +914,22 @@ const HomePage = () => {
 
 function App() {
   const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
-  
+
   const exchangeCodeForToken = async (code) => {
     const codeVerifier = localStorage.getItem('codeVerifier');
     if (!codeVerifier) {
-      console.error('Code Verifier not found'); // Handle error
+      console.error('Code Verifier not found'); // Error handling
       return;
     }
+
     try {
       const response = await axios.post('../api/mal', {
         code: code,
         codeVerifier: codeVerifier,
       });
+
       const { access_token } = response.data;
-      localStorage.setItem('accessToken', access_token); // Store token in local storage
+      localStorage.setItem('accessToken', access_token);
       setAccessToken(access_token);
     } catch (error) {
       console.error('Error exchanging code for token:', error);
@@ -941,7 +943,7 @@ function App() {
     if (code && !accessToken) {
       exchangeCodeForToken(code);
     }
-  }, [accessToken]);
+  }, [accessToken, exchangeCodeForToken]);
 
    // Render the main application
   return (
@@ -950,7 +952,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/mal-callback" element={<MALCallback />} />
+          <Route path="/mal-callback" element={<MALCallback exchangeCodeForToken={exchangeCodeForToken} />} />
           {/* Routes to be filled here */}
         </Routes>
       </div>
