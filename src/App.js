@@ -12,7 +12,7 @@ import defaultsidebarimg from './images/defaultsidebar.webp';
 import TV from './images/LED_24_inch.webp';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { kv } from "@vercel/kv";
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link, useNavigate, useLocation } from 'react-router-dom';
 import FAQ from './FAQ.js'; // FAQ Page Route
 import emailjs from '@emailjs/browser';
 
@@ -267,6 +267,26 @@ function Sidebar({ isOpen, toggle }) {
       </div>
   );
 }
+
+// handling the OAuth callback from MAL
+const MALCallback = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const code = queryParams.get('code');
+    if (code) {
+      exchangeCodeForToken(code).then(() => {
+        navigate('/'); // Redirect user to home page after successful login
+      });
+    } else {
+      navigate('/'); // Redirect to home if no code is found, adjust as necessary
+    }
+  }, [location, navigate]);
+
+  return <div>Processing your login...</div>; // Show a loading message
+};
   
 
 // Quiz component for starting the anime recommendation quiz
@@ -894,6 +914,25 @@ const HomePage = () => {
 
 function App() {
   const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
+  
+  const exchangeCodeForToken = async (code) => {
+    const codeVerifier = localStorage.getItem('codeVerifier');
+    if (!codeVerifier) {
+      console.error('Code Verifier not found');
+      return;
+    }
+    try {
+      const response = await axios.post('../api/mal', {
+        code: code,
+        codeVerifier: codeVerifier,
+      });
+      const { access_token } = response.data;
+      localStorage.setItem('accessToken', access_token); // Store token in local storage
+      setAccessToken(access_token);
+    } catch (error) {
+      console.error('Error exchanging code for token:', error);
+    }
+  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -904,40 +943,6 @@ function App() {
     }
   }, [accessToken]);
 
-  const exchangeCodeForToken = async (code) => {
-    const codeVerifier = localStorage.getItem('codeVerifier');
-    if (!codeVerifier) {
-      console.error('Code Verifier not found');
-      return;
-    }
-    try {
-      const response = await axios.post('../api/mal', {
-      code: code,
-      codeVerifier: codeVerifier,
-    });
-      const { access_token } = response.data;
-      localStorage.setItem('accessToken', access_token); // Store token in local storage
-      setAccessToken(access_token);
-    } catch (error) {
-      console.error('Error exchanging code for token:', error);
-    }
-  };
-
-  const fetchDataUsingToken = async () => {
-    if (!accessToken) {
-      console.log('No access token available.');
-      return;
-    }
-
-    try {
-      const response = await axios.get('MYANIMELIST_DATA_ENDPOINT', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-    } catch (error) {
-      console.error('Failed to fetch data:', error);
-    }
-  };
-
    // Render the main application
   return (
     <Router>
@@ -945,6 +950,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/mal-callback" element={<MALCallback />} />
           {/* Routes to be filled here */}
         </Routes>
       </div>
