@@ -313,9 +313,12 @@ const initiateOAuthFlow = () => {
 };
 
 const generateCodeVerifier = () => {
-  const array = new Uint8Array(32);
+  const array = new Uint8Array(96);  // Base64 128 characters generated
   window.crypto.getRandomValues(array);
-  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+  return btoa(String.fromCharCode.apply(null, array))
+    .replace(/\+/g, '-') // Replace '+' with '-'
+    .replace(/\//g, '_') // Replace '/' with '_'
+    .replace(/=+$/, ''); // Removes padding
 };
 
 const generateRandomState = () => {
