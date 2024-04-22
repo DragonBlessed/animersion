@@ -863,7 +863,7 @@ function Footer() {
 
 
   return (
-    <div className='bg-gold'>
+    <div className='bg-goldfooter'>
       <div className='container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
         <div>
           <h3 className='font-poppins text-lg font-bold mb-4'>Quick Links</h3>
