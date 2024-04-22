@@ -6,89 +6,99 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import HomePage from './App.js'; // HomePage Page Route
+import Select from 'react-select';
 
 // Header component for site navigation
 function Header() {
-  // State for managing the menu and hover state
-  const [showMenu, setShowMenu] = useState(false);
-  const [hoveredButton, setHoveredButton] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
+  const [selectedOption, setSelectedOption] = useState(null);
 
-  // Toggle the menu and set scroll behavior
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
-    setHoveredButton(null);
-    if (!showMenu) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-  };
-  
-  // Handle mouse enter and leave events for buttons
-  const handleButtonMouseEnter = (buttonId) => {
-    setHoveredButton(buttonId);
-  };
+  // Listener for window resize to toggle mobile view
+  useEffect(() => {
+      const handleResize = () => {
+          setIsMobile(window.innerWidth < 700);
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  const handleButtonMouseLeave = () => {
-    setHoveredButton(null);
+  const options = [
+      { value: '/', label: 'Home' },
+      { value: '/anime-genres', label: 'Anime Genres' },
+      { value: '/mal-profile', label: 'MAL Profile' },
+      { value: '/faq', label: 'FAQ' }
+  ];
+
+  const handleChange = (option) => {
+      setSelectedOption(option);
+      window.location.pathname = option.value; // Navigate on select
   };
 
   return (
       <div className='header'>
-        <div className='headerTop'>
-          <div id='title'>
-            <img id='headericon' src={angelheadericon} alt='Header Icon' />
-            <h1 id='headertitle'>Animersion</h1>
-          </div>
-        <div className='toplinks'>
-          {window.innerWidth < 700 ? (
-            <div className={`dropdown ${showMenu ? 'active' : ''}`}>
-              <button onClick={toggleMenu} className="menuButton">Menu</button>
-              <div className='dropdown-content'>
-                <Link to="/" className="dropdownButton">Home</Link>
-                <button id="anime-genres" className="dropdownButton">Anime Genres</button>
-                <button id="mal-profile" className="dropdownButton">MAL Profile</button>
-                <Link to="/faq" className="dropdownButton">Faq</Link>
+          <div className='headerTop'>
+              <div id='title'>
+                  <img id='headericon' src={angelheadericon} alt='Header Icon' />
+                  <h1 id='headertitle'>Animersion</h1>
               </div>
-            </div>
-          ) : (
-            <>
-              <Link to="/"
-                className={`normalButton ${hoveredButton === 'home' ? 'hover' : ''}`}
-                onClick={() => setHoveredButton(null)}
-                onMouseEnter={() => handleButtonMouseEnter('home')}
-                onMouseLeave={handleButtonMouseLeave}
-              >
-                Home
-              </Link>
-              <button
-                id="anime-genres"
-                className={`normalButton ${hoveredButton === 'anime-genres' ? 'hover' : ''}`}
-                onClick={() => setHoveredButton(null)}
-                onMouseEnter={() => handleButtonMouseEnter('anime-genres')}
-                onMouseLeave={handleButtonMouseLeave}
-              >
-                Anime Genres
-              </button>
-              <button
-                id="mal-profile"
-                className={`normalButton ${hoveredButton === 'mal-profile' ? 'hover' : ''}`}
-                onClick={() => setHoveredButton(null)}
-                onMouseEnter={() => handleButtonMouseEnter('mal-profile')}
-                onMouseLeave={handleButtonMouseLeave}
-              >
-                MAL Profile
-              </button>
-                <Link to="/faq" className={`normalButton ${hoveredButton === 'faq' ? 'hover' : ''}`}
-                onMouseEnter={() => handleButtonMouseEnter('faq')}
-                onMouseLeave={handleButtonMouseLeave}>
-                Faq
-              </Link>
-            </>
-          )}
-        </div>
+              <div className='toplinks'>
+                  {isMobile ? (
+                      <Select
+                          className="dropdown-select"
+                          value={selectedOption}
+                          onChange={handleChange}
+                          options={options}
+                          placeholder="Menu"
+                          isSearchable={false}
+                          menuPosition='fixed'
+                          styles={{
+                            control: (provided, state) => ({
+                              ...provided,
+                              backgroundColor: 'navy',
+                              color: 'white',
+                              borderRadius: 10,
+                              border: state.isFocused ? '1px solid #FFD700' : 'none',
+                              boxShadow: state.isFocused ? '0 0 0 1px #FFD700' : 'none',
+                              width: '100%',
+                              cursor: 'pointer',
+                              bordercolor: 'white'
+                            }),
+                            option: (provided, state) => ({
+                              ...provided,
+                              backgroundColor: state.isSelected ? '#FFD700' : 'navy',
+                              color: state.isSelected ? 'white' : 'white',
+                              cursor: 'pointer',
+                              ':hover': {
+                                  ...provided[':hover'],
+                                  backgroundColor: '#FFD700',
+                                  color: 'white',
+                              }
+                            }),
+                            menu: (provided) => ({
+                                ...provided,
+                                backgroundColor: 'navy',
+                            }),
+                            singleValue: (provided) => ({
+                                ...provided,
+                                color: 'white',
+                            }),
+                            placeholder: (provided) => ({
+                              ...provided,
+                              color: 'white',  // Placeholder text to white
+                          })
+                        }}          
+                      />
+                  ) : (
+                      <>
+                          <Link to="/" className="normalButton">Home</Link>
+                          <Link to="/anime-genres" className="normalButton">Anime Genres</Link>
+                          <Link to="/mal-profile" className="normalButton">MAL Profile</Link>
+                          <Link to="/faq" className="normalButton">FAQ</Link>
+                      </>
+                  )}
+              </div>
+          </div>
       </div>
-    </div>
   );
 }
 
@@ -167,6 +177,8 @@ const FAQ = () => {
     </div>
   );
 };
+
+
 
 // Footer component for the application
 function Footer() { 
