@@ -3,7 +3,6 @@ import axios from 'axios';
 import './App.css';
 import angelheadericon from './images/angelkAnime_GirlBG.webp';
 import animebg from './images/animebg.webp';
-import footeranimebg from './images/footeranimebg.webp';
 import 'tailwindcss/tailwind.css';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
@@ -17,6 +16,7 @@ import { BrowserRouter as Router, Route, Routes, Link, useNavigate, useLocation 
 import FAQ from './FAQ.js'; // FAQ Page Route
 import emailjs from '@emailjs/browser';
 import Select from 'react-select';
+import { ClipLoader, BeatLoader } from 'react-spinners';
 
 export async function Cart({ params }) {
   const cart = await kv.get(params.user);
@@ -154,6 +154,17 @@ function Slogan() {
 const FeaturedCarousel = () => {
   // State hook to store the carousel data.
   const [carouselData, setCarouselData] = useState([]);
+  const [message, setMessage] = useState('');
+
+  // Display an error message if the carousel data is not available or not loading quick enough (5 seconds)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setMessage('The MyAnimeList website or API appears to be having issues. Please try again later.');
+    }, 5000);
+
+    // Clean up the timer when the component is unmounted or the timeout is reset
+    return () => clearTimeout(timer);
+}, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -172,8 +183,14 @@ const FeaturedCarousel = () => {
   // Render the carousel or an error message if the data is not available
   if (!carouselData || carouselData.length === 0) {
     return (
-      <div className="carousel-container mt-6 p-4 bg-gold text-center">
-        <p className="text-lg">The MyAnimeList website or API appears to be having issues. Please try again later.</p>
+      <div className="flex flex-col items-center justify-center mt-6 p-4 loading-bg-gif text-center h-screen">
+        <ClipLoader
+          color="#FFD700"
+          loading
+          size={700}
+          speedMultiplier={1}
+        />
+        <p className="text-5xl mt-4">{message}</p>
       </div>
     );
   }
@@ -271,7 +288,14 @@ function Sidebar({ isOpen, toggle }) {
             </div>
           ))
         ) : (
-          <p>Loading news...</p>
+          
+          <p>Loading news...
+            <BeatLoader
+              color="#FFD700"
+              margin={2}
+              size={15}
+            />
+          </p>
         )}
       </div>
       )}
@@ -371,7 +395,6 @@ const handleMALCallback = async (code) => {
       console.error(`Token exchange failed with status: ${response.status}`, await response.text());
       return;
     }
-
     const data = await response.json();
     console.log('Access Token:', data.access_token);
   } catch (error) {
