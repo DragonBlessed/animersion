@@ -303,27 +303,6 @@ function Sidebar({ isOpen, toggle }) {
   );
 }
 
-// handling the OAuth callback from MAL
-const MALCallback = ({ exchangeCodeForToken }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const code = queryParams.get('code');
-    if (code) {
-      exchangeCodeForToken(code).then(() => {
-        navigate('/'); // Redirect user to home page after successful login
-      }).catch(error => console.error('Error processing the token exchange:', error));
-    } else {
-      navigate('/'); // Redirect to home if no code is found
-    }
-  }, [location, navigate, exchangeCodeForToken]);
-
-  return <div>Processing your login...</div>; // Show a loading message
-};
-  
-
 // Quiz component for starting the anime recommendation quiz
 function StartQuiz() {
   // State variables for managing the quiz
@@ -333,96 +312,11 @@ function StartQuiz() {
   const [quizAnswers, setQuizAnswers] = useState([]);
   const [animationStage, setAnimationStage] = useState('enter')
   const [contentKey, setContentKey] = useState(0);
-  
-// Function to initiate the OAuth flow with PKCE
-const initiateOAuthFlow = () => {
-  const codeVerifier = generateCodeVerifier();
-  const codeChallenge = codeVerifier; // For PKCE
-  const state = generateRandomState();
-  const clientId = process.env.REACT_APP_MAL_CLIENT_ID;
-  const redirectUri = encodeURIComponent(process.env.REACT_APP_MAL_REDIRECT_URL);
+  const [username, setUsername] = useState("");
 
-  const authUrl = `https://myanimelist.net/v1/oauth2/authorize?response_type=code&client_id=${clientId}&code_challenge=${codeChallenge}&state=${state}&redirect_uri=${redirectUri}&code_challenge_method=plain`;
-
-  window.location.href = authUrl;
-};
-
-const generateCodeVerifier = () => {
-  const array = new Uint8Array(96);  // Base64 128 characters generated
-  window.crypto.getRandomValues(array);
-  return btoa(String.fromCharCode.apply(null, array))
-    .replace(/\+/g, '-') // Replace '+' with '-'
-    .replace(/\//g, '_') // Replace '/' with '_'
-    .replace(/=+$/, ''); // Removes padding
-};
-
-const generateRandomState = () => {
-  const array = new Uint8Array(32);
-  window.crypto.getRandomValues(array);
-  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
-};
-
-const handleMALLogin = () => {
-  initiateOAuthFlow();
-};
-
-const handleMALCallback = async (code) => {
-  // Retrieve the codeVerifier from localStorage
-  const codeVerifier = localStorage.getItem('codeVerifier');
-  if (!codeVerifier) {
-    console.error('Code Verifier not found');
-    return;
-  }
-
-  const clientId = process.env.REACT_APP_MAL_CLIENT_ID;
-  const redirectUri = process.env.REACT_APP_MAL_REDIRECT_URL;
-
-  const params = new URLSearchParams();
-  params.append('client_id', clientId);
-  params.append('code', code);
-  params.append('code_verifier', codeVerifier);
-  params.append('grant_type', 'authorization_code');
-  params.append('redirect_uri', redirectUri);
-
-  try {
-    const response = await fetch('https://myanimelist.net/v1/oauth2/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: params.toString(),
-    });
-
-    if (!response.ok) {
-      console.error(`Token exchange failed with status: ${response.status}`, await response.text());
-      return;
-    }
-    const data = await response.json();
-    console.log('Access Token:', data.access_token);
-  } catch (error) {
-    console.error('Token exchange error:', error);
-  }
-};
-
-useEffect(() => {
-  const restoreQuizStateAndHandleOAuthCallback = () => {
-    const savedState = localStorage.getItem('quizState');
-    if (savedState) {
-      const { quizStep, quizAnswers } = JSON.parse(savedState);
-      quizAnswers.concat("Yes, I'll link it.");
-      setQuizStep(quizStep + 1);
-      setQuizAnswers(quizAnswers);
-      localStorage.removeItem('quizState');
-    }
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    if (code) {
-      // Placeholder for handling the OAuth callback
-      console.log("Handle OAuth Callback with code:", code);
-    }
+  const handleInputChange = (event) => {
+    setUsername(event.target.value); // This sets the username
   };
-
-  restoreQuizStateAndHandleOAuthCallback();
-}, []);
 
 
 const questions = [
@@ -431,8 +325,11 @@ const questions = [
     options: ["Yes, let's begin!", "なに?"]
   },
   {
-    question: "Would you like to link your MyAnimeList profile for a more precise recommendation?",
-    options: [{ text: "Yes, I'll link it.", action: handleMALLogin }, "No, proceed without linking."]
+    question: "Please enter your MyAnimeList username to personalize recommendations:",
+    options: [
+      { text: "Submit Username", action: () => handleInputChange },
+    ],
+    inputType: "text"
   },
   {
     question: "Are you interested in popular mainstream Anime or lesser-known hidden gems?",
@@ -617,7 +514,6 @@ const questions = [
       </div>
     );
   } else {
-    // Quiz questions
     return (
         <div className='quizContainer'>
           <div className='bg'>
@@ -630,55 +526,52 @@ const questions = [
             </div>
 
             <div className="flex flex-col items-center justify-center space-y-4">
-              {questions[quizStep].options.map((option, index) => {
-                const buttonText = typeof option === "string" ? option : option.text;
-                const handleClick = typeof option === "string" ? () => handleAnswerClick(option) : option.action;
-                return (
+              {questions[quizStep].inputType === "text" ? (
+                <div>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={handleInputChange}
+                    placeholder="Enter your MAL username"
+                    className="font-nunito text-sm text-black p-2 rounded-md"
+                  />
                   <button
-                    className="font-nunito bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
-                    key={index}
-                    onClick={handleClick}
+                    className="font-nunito bg-blue-900 text-white text-sm rounded-md font-bold cursor-pointer px-5 py-3 mt-2"
+                    onClick={() => handleAnswerClick("Username submitted")}
                   >
-                    {buttonText}
+                    Submit Username
                   </button>
-                );
-              })}
-              
-              <div className="arrowButtonsContainer">
-                {quizStep > 0 && (
-                  <button
-                    className="navigationButton prev"
-                    onClick={handlePrevQuestion}
-                  >
-                  </button>
-                )}
-
-                {(quizStep < questions.length - 1 && quizStep !== 0) && (
-                  <button
-                    className="navigationButton next"
-                    onClick={handleNextQuestion}
-                  >
-                  </button>
-                )}
-              </div>
+                </div>
+              ) : questions[quizStep].options.map((option, index) => {
+                  const buttonText = typeof option === "string" ? option : option.text;
+                  const handleOptionClick = typeof option === "string" ? () => handleAnswerClick(option) : option.action;
+                  return (
+                    <button
+                      key={index}
+                      onClick={handleOptionClick}
+                      className="font-nunito bg-blue-900 text-sm text-white rounded-md font-bold cursor-pointer px-5 py-3"
+                    >
+                      {buttonText}
+                    </button>
+                  );
+                })}
             </div>
           </div>
           )}
-              {Number(quizStep) === Number(questions.length) && (
-                <div className='submitContainer'>
-                  <div className="flex flex-col items-center justify-center space-y-4">
-                    <button
-                      className="font-nunito bg-green-500 text-xl text-white rounded-md font-bold cursor-pointer px-8 py-4"
-                      onClick={handleQuizSubmit}
-                    >
-                      Submit
-                    </button>
-                  </div>
-                </div>
-              )}
+          {Number(quizStep) === Number(questions.length) && (
+            <div className='submitContainer'>
+              <div className="flex flex-col items-center justify-center space-y-4">
+                <button
+                  className="font-nunito bg-green-500 text-xl text-white rounded-md font-bold cursor-pointer px-8 py-4"
+                  onClick={handleQuizSubmit}
+                >
+                  Submit
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-      
-    )
+    );
   }
 }
 
@@ -950,37 +843,7 @@ const HomePage = () => {
 };
 
 function App() {
-  const [accessToken, setAccessToken] = useState(localStorage.getItem('accessToken'));
 
-  const exchangeCodeForToken = async (code) => {
-    const codeVerifier = localStorage.getItem('codeVerifier');
-    if (!codeVerifier) {
-      console.error('Code Verifier not found'); // Error handling
-      return;
-    }
-
-    try {
-      const response = await axios.post('../api/mal', {
-        code: code,
-        codeVerifier: codeVerifier,
-      });
-
-      const { access_token } = response.data;
-      localStorage.setItem('accessToken', access_token);
-      setAccessToken(access_token);
-    } catch (error) {
-      console.error('Error exchanging code for token:', error);
-    }
-  };
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-
-    if (code && !accessToken) {
-      exchangeCodeForToken(code);
-    }
-  }, [accessToken, exchangeCodeForToken]);
 
    // Render the main application
   return (
@@ -989,7 +852,6 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/mal-callback" element={<MALCallback exchangeCodeForToken={exchangeCodeForToken} />} />
           {/* Routes to be filled here */}
         </Routes>
       </div>
