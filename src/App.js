@@ -448,33 +448,20 @@ const questions = [
     console.log(quizStep)
     console.log(questions.length)
   };
-  
-  const handleNextQuestion = () => {
-    if (quizStep < questions.length - 1) {
-      setContentKey(prevKey => prevKey + 1);
-      setQuizStep(quizStep + 1);
-    }
-  };
-  
-  const handlePrevQuestion = () => {
-    if (quizStep > 0) {
-      setContentKey(prevKey => prevKey + 1);
-      setQuizStep(quizStep - 1);
-    }
-  };
 
   const handleQuizSubmit = () => {
     const attributes = setAttributes(quizAnswers);
     saveQuizAnswers('clientId', quizAnswers);
   };
 
-  const saveQuizAnswers = async (clientId, quizAnswers) => {
+  const saveQuizAnswers = async () => {
     try {
-      await axios.post('/api/saveQuizAnswers', {
-        clientId,
-        quizAnswers
+      const attributes = setAttributes(quizAnswers);
+      const response = await axios.post('/api/saveQuizAnswers', {
+        username,
+        quizAnswers: attributes
       });
-      console.log('Answers saved successfully');
+      console.log('Answers saved successfully:', response.data);
     } catch (error) {
       console.error('Failed to save answers:', error);
     }

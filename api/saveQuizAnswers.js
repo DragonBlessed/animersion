@@ -1,18 +1,21 @@
-import { kv } from "@vercel/kv";
+import express from 'express';
+import QuizResult from './models/QuizResult.js'; 
 
-export default async (req, res) => {
-  if (req.method === 'POST') {
-    const { clientId, quizAnswers } = req.body;
-    try {
-      // Uses userId as the key and store their answers as the value.
-      await kv.set(`quiz-answers-${clientId}`, JSON.stringify(quizAnswers));
-      res.status(200).json({ message: 'Answers saved successfully' });
-    } catch (error) {
-      console.error('Error saving quiz answers:', error);
-      res.status(500).json({ error: 'Failed to save quiz answers' });
-    }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+const router = express.Router();
+
+router.post('/saveQuizAnswers', async (req, res) => {
+  const { username, quizAnswers } = req.body;
+  try {
+    const newQuizResult = new QuizResult({
+      username,
+      quizAnswers
+    });
+    await newQuizResult.save();
+    res.status(201).json({ message: 'Quiz answers saved successfully' });
+  } catch (error) {
+    console.error('Failed to save quiz answers:', error);
+    res.status(500).json({ error: 'Failed to save quiz answers' });
   }
-};
+});
+
+export default router;
