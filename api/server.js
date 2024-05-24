@@ -4,6 +4,8 @@ import { connectToDatabase } from './db.js';
 import saveQuizAnswersRouter from './saveQuizAnswers.js';
 import userAnimelistRouter from './userAnimelist.js';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
