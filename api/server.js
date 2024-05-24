@@ -1,15 +1,17 @@
 import express from 'express';
-const router = express.Router();
+import cors from 'cors';
 import { connectToDatabase } from './db.js';
 import saveQuizAnswersRouter from './saveQuizAnswers.js';
 import userAnimelistRouter from './userAnimelist.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const cors = require('cors');
-require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
+
 
 connectToDatabase().then(() => {
   app.use('/api/jikan', require('./jikan.js'));
