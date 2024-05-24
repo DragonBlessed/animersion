@@ -11,4 +11,4 @@ const quizResultSchema = new mongoose.Schema({
 
 const QuizResult = mongoose.model('QuizResult', quizResultSchema);
 
-module.exports = QuizResult;
+module.exports = { QuizResult }; 

@@ -1,5 +1,5 @@
 import express from 'express';
-import QuizResult from './models/quizResults.js'; 
+import { QuizResult } from './models/quizResults.js'; 
 
 const router = express.Router();
 
