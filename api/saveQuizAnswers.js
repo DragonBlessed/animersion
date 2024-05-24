@@ -1,11 +1,11 @@
 import express from 'express';
-import QuizResult from './models/QuizResult.js'; 
+import QuizResult from './models/quizResults.js'; 
 
 const router = express.Router();
 
-router.post('/saveQuizAnswers', async (req, res) => {
-  const { username, quizAnswers } = req.body;
+router.post('/', async (req, res) => {
   try {
+    const { username, quizAnswers } = req.body;
     const newQuizResult = new QuizResult({
       username,
       quizAnswers

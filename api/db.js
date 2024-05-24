@@ -16,20 +16,17 @@ const client = new MongoClient(mongoUri, {
 });
 
 // Connect to database
-async function run() {
+export async function connectToDatabase() {
   try {
     await client.connect();
     console.log("Connected successfully to server");
     const database = client.db("AnimeRecommendationDB");
     const collection = database.collection('Users');
 
-    // Test
-    const doc = { name: "WildFister88"}; // my own test account
+    const doc = { name: "WildFister88" }; // my own test account
     const result = await collection.insertOne(doc);
     console.log(`A document was inserted with the _id: ${result.insertedId}`);
-  } finally {
-    await client.close();
+  } catch (err) {
+    console.error('Failed to connect to the database', err);
   }
 }
-
-run().catch(console.dir);

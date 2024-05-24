@@ -2,7 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-router.get('/user-animelist/:username', async (req, res) => {
+router.get('/:username', async (req, res) => {
   const { username } = req.params;
   try {
     const response = await axios.get(`https://api.myanimelist.net/v2/users/${username}/animelist`, {
@@ -21,4 +21,4 @@ router.get('/user-animelist/:username', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
