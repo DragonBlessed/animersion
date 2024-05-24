@@ -1,13 +1,11 @@
 import express from 'express';
 const router = express.Router();
 import { connectToDatabase } from './db.js';
-const { QuizResult } = require('./models/quizResults.js');
 import saveQuizAnswersRouter from './saveQuizAnswers.js';
 import userAnimelistRouter from './userAnimelist.js';
 
 const app = express();
 const cors = require('cors');
-const axios = require('axios');
 require('dotenv').config();
 
 app.use(cors());
