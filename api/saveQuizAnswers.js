@@ -6,6 +6,9 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   try {
     const { username, quizAnswers } = req.body;
+    if (!QuizResult) {
+      return res.status(500).json({ error: 'QuizResult is null' });
+    }
     const newQuizResult = new QuizResult({
       username,
       quizAnswers
