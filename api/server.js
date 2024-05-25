@@ -15,7 +15,7 @@ app.use(express.json());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-connectToDatabase().then(() => {
+connectToDatabase().then(async () => {
   import(path.join(__dirname, './jikan.js')).then(module => app.use('/api/jikan', module.default));
   import(path.join(__dirname, './mal.js')).then(module => app.use('/api/mal', module.default));
   import(path.join(__dirname, './saveQuizAnswers.js')).then(module => app.use('/api/saveQuizAnswers', module.default));
