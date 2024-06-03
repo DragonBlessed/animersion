@@ -5,6 +5,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import saveQuizAnswersRouter from './saveQuizAnswers.js';
+import userAnimeListRouter from './userAnimeList.js';
+import recommendationsRouter from './recommendations.js';
+
 dotenv.config();
 
 const app = express();
@@ -20,6 +24,7 @@ connectToDatabase().then(async () => {
   import(path.join(__dirname, './mal.js')).then(module => app.use('/api/mal', module.default));
   import(path.join(__dirname, './saveQuizAnswers.js')).then(module => app.use('/api/saveQuizAnswers', module.default));
   import(path.join(__dirname, './userAnimeList.js')).then(module => app.use('/api/user-animelist', module.default));
+  import(path.join(__dirname, './userAnimeList.js')).then(module => app.use('/api/recommendations', module.default));
 
 
   const port = process.env.PORT || 3000;

@@ -313,6 +313,7 @@ function StartQuiz() {
   const [animationStage, setAnimationStage] = useState('enter')
   const [contentKey, setContentKey] = useState(0);
   const [username, setUsername] = useState("");
+  const [recommendations, setRecommendations] = useState([]);
 
   const handleInputChange = (event) => {
     setUsername(event.target.value); // This sets the username
@@ -370,7 +371,7 @@ const questions = [
     setAnimationStage('exit');
     setTimeout(() => {
       setQuizAnswers(prevAnswers => [...prevAnswers, answer]);
-      if (quizStep < questions.length - 1) {
+      if (quizStep < questions.length) {
         setQuizStep(quizStep + 1);
       } else {
       }
@@ -449,9 +450,16 @@ const questions = [
     console.log(questions.length)
   };
 
-  const handleQuizSubmit = () => {
-    const attributes = setAttributes(quizAnswers);
-    saveQuizAnswers('clientId', quizAnswers);
+  const handleQuizSubmit = async () => {
+    try {
+      const response = await axios.post('/api/recommendations', {
+        username,
+        quizAnswers
+      });
+      setRecommendations(response.data.recommendations);
+    } catch (error) {
+      console.error('Failed to fetch recommendations:', error);
+    }
   };
 
   const saveQuizAnswers = async () => {
@@ -557,6 +565,21 @@ const questions = [
               </div>
             </div>
           )}
+            {recommendations.length > 0 && (
+                <div className="recommendationsContainer">
+                    <h2 className="font-nunito text-2xl font-bold text-center">Recommended Anime</h2>
+                    <ul className="recommendationsList">
+                        {recommendations.map((anime) => (
+                            <li key={anime.id} className="recommendationItem">
+                                <a href={`https://myanimelist.net/anime/${anime.id}`} target="_blank" rel="noopener noreferrer">
+                                    <img src={anime.image} alt={anime.title} className="recommendationImage" />
+                                    <p className="recommendationTitle">{anime.title}</p>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
         </div>
     );
   }
